@@ -1,0 +1,6 @@
+{
+  "elements": {},
+  "imports": [
+    "package:bills_control/data_base/gastos.dart"
+  ]
+}

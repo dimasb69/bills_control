@@ -14,7 +14,8 @@
         "flutter",
         "flutter_bloc",
         "path_provider",
-        "toon"
+        "toon",
+        "toon_format"
       ],
       "devDependencies": [
         "build_runner",
@@ -25,7 +26,7 @@
     },
     {
       "name": "build_runner",
-      "version": "2.10.4",
+      "version": "2.10.5",
       "dependencies": [
         "analyzer",
         "args",
@@ -62,7 +63,7 @@
     },
     {
       "name": "drift_dev",
-      "version": "2.30.0",
+      "version": "2.30.1",
       "dependencies": [
         "analyzer",
         "args",
@@ -142,7 +143,7 @@
     },
     {
       "name": "drift",
-      "version": "2.30.0",
+      "version": "2.30.1",
       "dependencies": [
         "async",
         "collection",
@@ -154,6 +155,11 @@
         "stream_channel",
         "web"
       ]
+    },
+    {
+      "name": "toon_format",
+      "version": "0.1.0",
+      "dependencies": []
     },
     {
       "name": "toon",
@@ -171,7 +177,7 @@
     },
     {
       "name": "bloc",
-      "version": "9.1.0",
+      "version": "9.2.0",
       "dependencies": [
         "meta"
       ]
@@ -215,7 +221,7 @@
     },
     {
       "name": "watcher",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "dependencies": [
         "async",
         "path"
@@ -365,7 +371,7 @@
     },
     {
       "name": "code_builder",
-      "version": "4.11.0",
+      "version": "4.11.1",
       "dependencies": [
         "built_collection",
         "built_value",
@@ -376,7 +382,7 @@
     },
     {
       "name": "built_value",
-      "version": "8.12.1",
+      "version": "8.12.3",
       "dependencies": [
         "built_collection",
         "collection",
@@ -419,7 +425,7 @@
     },
     {
       "name": "build",
-      "version": "4.0.3",
+      "version": "4.0.4",
       "dependencies": [
         "analyzer",
         "crypto",
@@ -469,7 +475,7 @@
     },
     {
       "name": "source_gen",
-      "version": "4.1.1",
+      "version": "4.2.0",
       "dependencies": [
         "analyzer",
         "async",
@@ -493,7 +499,7 @@
     },
     {
       "name": "sqlparser",
-      "version": "0.42.1",
+      "version": "0.43.0",
       "dependencies": [
         "charcode",
         "collection",
@@ -637,9 +643,11 @@
     },
     {
       "name": "path_provider_foundation",
-      "version": "2.5.1",
+      "version": "2.6.0",
       "dependencies": [
+        "ffi",
         "flutter",
+        "objective_c",
         "path_provider_platform_interface"
       ]
     },
@@ -760,7 +768,7 @@
     },
     {
       "name": "ffi",
-      "version": "2.1.4",
+      "version": "2.1.5",
       "dependencies": []
     },
     {
@@ -812,6 +820,19 @@
       ]
     },
     {
+      "name": "objective_c",
+      "version": "9.2.3",
+      "dependencies": [
+        "code_assets",
+        "collection",
+        "ffi",
+        "hooks",
+        "logging",
+        "native_toolchain_c",
+        "pub_semver"
+      ]
+    },
+    {
       "name": "nested",
       "version": "1.0.0",
       "dependencies": [
@@ -822,6 +843,38 @@
       "name": "vm_service",
       "version": "15.0.2",
       "dependencies": []
+    },
+    {
+      "name": "native_toolchain_c",
+      "version": "0.17.4",
+      "dependencies": [
+        "code_assets",
+        "glob",
+        "hooks",
+        "logging",
+        "meta",
+        "pub_semver"
+      ]
+    },
+    {
+      "name": "hooks",
+      "version": "1.0.0",
+      "dependencies": [
+        "collection",
+        "crypto",
+        "logging",
+        "meta",
+        "pub_semver",
+        "yaml"
+      ]
+    },
+    {
+      "name": "code_assets",
+      "version": "1.0.0",
+      "dependencies": [
+        "collection",
+        "hooks"
+      ]
     }
   ],
   "configVersion": 1
