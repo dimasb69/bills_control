@@ -13,6 +13,7 @@
         "drift_flutter",
         "flutter",
         "flutter_bloc",
+        "flutter_sizer",
         "path_provider",
         "toon",
         "toon_format"
@@ -114,6 +115,13 @@
         "stream_channel",
         "test_api",
         "vector_math"
+      ]
+    },
+    {
+      "name": "flutter_sizer",
+      "version": "1.0.5",
+      "dependencies": [
+        "flutter"
       ]
     },
     {

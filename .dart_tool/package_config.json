@@ -206,6 +206,12 @@
       "languageVersion": "3.8"
     },
     {
+      "name": "flutter_sizer",
+      "rootUri": "file:///home/dgbp00/.pub-cache/hosted/pub.dev/flutter_sizer-1.0.5",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "flutter_test",
       "rootUri": "file:///home/dgbp00/fvm/versions/3.38.7/packages/flutter_test",
       "packageUri": "lib/",

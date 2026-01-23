@@ -1,6 +1,10 @@
 import 'package:bills_control/data_base/gastos.dart';
 import 'package:bills_control/data_base/gastos_crud.dart';
+import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bills_control/cubits/constant_cubits.dart';
 import 'themes.dart';
 
 List<Gasto> gastosList = [];
@@ -11,21 +15,49 @@ TextEditingController dateController = TextEditingController();
 TextEditingController idController = TextEditingController();
 TextEditingController idUpdateController = TextEditingController();
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const Main());
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  runApp(const BlocsProviders());
 }
 
-class Main extends StatefulWidget {
-  const Main({super.key});
+class BlocsProviders extends StatelessWidget {
+  const BlocsProviders({super.key});
 
-  @override
-  State<Main> createState() => _MainState();
-}
-
-class _MainState extends State<Main> {
   @override
   Widget build(BuildContext context) {
+    return FlutterSizer(
+      builder: (context, orientation, screenType) {
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (context) => CateHomeCubit()),
+            BlocProvider(create: (context) => CateWorkCubit()),
+          ],
+          child: const MyApp(),
+        );
+      },
+    );
+  }
+}
+
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  Widget build(BuildContext context) {
+    final cateHomeCubit = context.read<CateHomeCubit>();
+    final cateWorkCubit = context.read<CateWorkCubit>();
+    cateHomeCubit.state.forEach((element) {
+      print(element.name);
+    });
+    cateWorkCubit.state.forEach((element) {
+      print(element.name);
+    });
     DateTime now = DateTime.now();
     dateController.text = now.toString();
     return MaterialApp(
