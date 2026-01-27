@@ -19,7 +19,8 @@ class NewControl extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
-    dateController.text = now.toString();
+    DateTime date = DateTime(now.year, now.month, now.day);
+    dateController.text = date.toString();
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(
@@ -68,6 +69,16 @@ class NewControl extends StatelessWidget {
                     children: [
                       ElevatedButton(
                         onPressed: () async {
+                          if (motivoController.text.length < 4) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  "El motivo debe tener al menos 4 caracteres",
+                                ),
+                              ),
+                            );
+                            return;
+                          }
                           await writeGasto(
                             motivoController.text,
                             DateTime.parse(dateController.text),
@@ -76,8 +87,10 @@ class NewControl extends StatelessWidget {
                             dateController.clear();
                             motivoController.clear();
                             amountController.clear();
-                            context.read<GastosCubits>().getGastos();
-                            Navigator.pop(context);
+                            if (context.mounted) {
+                              context.read<GastosCubits>().getGastos();
+                              Navigator.pop(context);
+                            }
                           });
                         },
                         child: const Text("Guardar"),
