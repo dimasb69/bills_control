@@ -22,7 +22,7 @@ class Home extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Control de Gastos"),
         actions: [
-          IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
+          /*  IconButton(icon: const Icon(Icons.settings), onPressed: () {}), */
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
@@ -51,50 +51,53 @@ class Home extends StatelessWidget {
                     decoration: BoxDecoration(
                       border: Border(bottom: BorderSide(color: Colors.grey)),
                     ),
-                    alignment: Alignment.bottomCenter,
+                    alignment: Alignment.centerLeft,
                     padding: EdgeInsets.only(
                       top: 10.dp,
                       bottom: 10.dp,
-                      left: 25.dp,
                       right: 10.dp,
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Tooltip(
-                          message: "Ver/Editar historial",
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => GastosHistorial(
-                                    id: state[index].id,
-                                    name: state[index].motivo,
-                                  ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => GastosHistorial(
+                                  id: state[index].id,
+                                  name: state[index].motivo,
                                 ),
-                              );
-                            },
-
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  state[index].motivo,
-                                  style: TextStyle(
-                                    fontSize: 5.w,
-                                    color: Colors.white,
+                              ),
+                            );
+                          },
+                          child: Tooltip(
+                            message: "Ver/Editar historial",
+                            child: Container(
+                              alignment: Alignment.centerLeft,
+                              padding: EdgeInsets.only(left: 18.dp),
+                              width: 70.w,
+                              height: 20.h,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    state[index].motivo,
+                                    style: TextStyle(
+                                      fontSize: 5.w,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  "${state[index].amount} \$",
-                                  style: TextStyle(
-                                    fontSize: 3.w,
-                                    color: Colors.white,
+                                  Text(
+                                    "${state[index].amount} \$",
+                                    style: TextStyle(
+                                      fontSize: 3.w,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),

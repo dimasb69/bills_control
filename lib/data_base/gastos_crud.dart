@@ -19,6 +19,13 @@ Future<void> writeGasto(String motivo, DateTime date, double amount) async {
       );
 }
 
+Future<List<Gasto>> readGastoById(int id) async {
+  List<Gasto> gasto = await (gastosDatabase.select(
+    gastosDatabase.gastos,
+  )..where((t) => t.id.equals(id))).get();
+  return gasto;
+}
+
 Future deleteGasto(int id) async {
   final gastoItems = await (gastosDatabase.select(
     gastosDatabase.gastosItems,
