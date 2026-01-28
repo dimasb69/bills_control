@@ -3,6 +3,7 @@ import 'package:bills_control/data_base/gastos.dart';
 import 'package:bills_control/data_base/gastos_crud.dart';
 import 'package:bills_control/excell/convert_data_to_excel.dart';
 import 'package:bills_control/screens/add_bils_history.dart';
+import 'package:bills_control/widgets/category_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
@@ -185,12 +186,8 @@ class GastosHistorial extends StatelessWidget {
                                                 labelText: "Concepto",
                                               ),
                                             ),
-                                            TextField(
+                                            CategorySelector(
                                               controller: categoryController,
-                                              maxLength: 15,
-                                              decoration: const InputDecoration(
-                                                labelText: "Categoria",
-                                              ),
                                             ),
                                             TextField(
                                               controller: dateController,

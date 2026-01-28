@@ -5,6 +5,7 @@ import 'package:bills_control/screens/gastos_historial.dart';
 import 'package:bills_control/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bills_control/widgets/category_selector.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 
 List<Gasto> gastosList = [];
@@ -56,14 +57,7 @@ class GastosHistorialAdd extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 5.h),
-                TextField(
-                  controller: categoryController,
-                  maxLength: 15,
-                  decoration: const InputDecoration(
-                    labelText: "Categoria",
-                    border: OutlineInputBorder(),
-                  ),
-                ),
+                CategorySelector(controller: categoryController),
                 SizedBox(height: 5.h),
                 TextField(
                   controller: amountController,

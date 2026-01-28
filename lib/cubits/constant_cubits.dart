@@ -6,6 +6,8 @@ class CateHomeCubit extends Cubit<List<CatType>> {
     : super([
         CatType('Mercado'),
         CatType('Transporte'),
+        CatType('Hospedaje'),
+        CatType('Alimentacion'),
         CatType('Salud'),
         CatType('Colegio'),
         CatType('Hogar'),
