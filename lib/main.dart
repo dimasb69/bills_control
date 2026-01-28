@@ -1,5 +1,5 @@
 import 'package:bills_control/screens/home.dart';
-import 'package:bills_control/themes.dart';
+import 'package:bills_control/conf/themes.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
     return FlutterSizer(
       builder: (context, orientation, screenType) {
         return MaterialApp(
-          title: "Control de Gastos",
+          title: "Mis Presupuestos",
           debugShowCheckedModeBanner: false,
           theme: AppThemes.slate,
           darkTheme: AppThemes.sage,

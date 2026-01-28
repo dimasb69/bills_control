@@ -39,7 +39,27 @@ class GastosHistorial extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        title: Text("Historial de Gastos $name"),
+        title: Row(
+          children: [
+            BlocBuilder<GastosCubits, List<Gasto>>(
+              builder: (context, state) {
+                final gastoC = state.firstWhere((element) => element.id == id);
+                return Row(
+                  children: [
+                    Text(name, style: TextStyle(fontSize: 14.dp)),
+                    Text(
+                      " - ${gastoC.amount} \$",
+                      style: TextStyle(
+                        fontSize: 14.dp,
+                        color: gastoC.amount > 0 ? Colors.green : Colors.red,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -139,6 +159,8 @@ class GastosHistorial extends StatelessWidget {
                                 amountController.text = stateFilter[index]
                                     .amount
                                     .toString();
+                                descriptionController.text =
+                                    stateFilter[index].description;
                                 dateController.text = stateFilter[index].date
                                     .toString();
                                 final idBills = stateFilter[index].gastoId;
@@ -148,22 +170,26 @@ class GastosHistorial extends StatelessWidget {
                                     final currentAmount =
                                         stateFilter[index].amount;
                                     return AlertDialog(
-                                      title: const Text("Editar gasto"),
+                                      title: Center(
+                                        child: Text("Editar gasto"),
+                                      ),
                                       content: SizedBox(
-                                        height: 15.h,
+                                        height: 33.h,
                                         width: 80.w,
                                         child: Column(
                                           children: [
                                             TextField(
-                                              controller: categoryController,
+                                              controller: descriptionController,
+                                              maxLength: 30,
                                               decoration: const InputDecoration(
-                                                labelText: "Categoria",
+                                                labelText: "Concepto",
                                               ),
                                             ),
                                             TextField(
-                                              controller: descriptionController,
+                                              controller: categoryController,
+                                              maxLength: 15,
                                               decoration: const InputDecoration(
-                                                labelText: "Concepto",
+                                                labelText: "Categoria",
                                               ),
                                             ),
                                             TextField(
@@ -182,57 +208,84 @@ class GastosHistorial extends StatelessWidget {
                                         ),
                                       ),
                                       actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text("Cancelar"),
-                                        ),
-                                        TextButton(
-                                          onPressed: () async {
-                                            if (double.parse(
-                                                  amountController.text,
-                                                ) !=
-                                                currentAmount) {
-                                              await sumarGasto(
-                                                idBills,
-                                                currentAmount,
-                                              );
-                                              if (context.mounted) {
-                                                context
-                                                    .read<GastosCubits>()
-                                                    .sumGasto(
-                                                      idBills,
-                                                      currentAmount,
-                                                    );
-                                              }
-                                              await restarGasto(
-                                                idBills,
-                                                double.parse(
-                                                  amountController.text,
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          //mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: Colors.black26,
+                                              ),
+                                              child: const Text(
+                                                "Cancelar",
+                                                style: TextStyle(
+                                                  color: Colors.red,
                                                 ),
-                                              );
-                                            }
-                                            if (context.mounted) {
-                                              context
-                                                  .read<GastosHistorialCubits>()
-                                                  .updGastoItem(
-                                                    stateFilter[index].id,
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: () async {
+                                                if (double.parse(
+                                                      amountController.text,
+                                                    ) !=
+                                                    currentAmount) {
+                                                  await sumarGasto(
                                                     idBills,
-                                                    descriptionController.text,
+                                                    currentAmount,
+                                                  );
+                                                  if (context.mounted) {
+                                                    context
+                                                        .read<GastosCubits>()
+                                                        .sumGasto(
+                                                          idBills,
+                                                          currentAmount,
+                                                        );
+                                                  }
+                                                  await restarGasto(
+                                                    idBills,
                                                     double.parse(
                                                       amountController.text,
                                                     ),
-                                                    DateTime.parse(
-                                                      dateController.text,
-                                                    ),
-                                                    categoryController.text,
-                                                    '',
                                                   );
-                                              Navigator.pop(context);
-                                            }
-                                          },
-                                          child: const Text("Actualizar"),
+                                                }
+                                                if (context.mounted) {
+                                                  context
+                                                      .read<
+                                                        GastosHistorialCubits
+                                                      >()
+                                                      .updGastoItem(
+                                                        stateFilter[index].id,
+                                                        idBills,
+                                                        descriptionController
+                                                            .text,
+                                                        double.parse(
+                                                          amountController.text,
+                                                        ),
+                                                        DateTime.parse(
+                                                          dateController.text,
+                                                        ),
+                                                        categoryController.text,
+                                                        '',
+                                                      );
+                                                  stateFilter = [];
+                                                  Navigator.pop(context);
+                                                }
+                                              },
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: Colors.black26,
+                                              ),
+                                              child: const Text(
+                                                "Actualizar",
+                                                style: TextStyle(
+                                                  color: Colors.green,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     );
@@ -247,33 +300,73 @@ class GastosHistorial extends StatelessWidget {
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
-                                      title: const Text("Eliminar movimiento"),
-                                      content: Text(
-                                        "¿Está seguro de eliminar este movimiento?",
+                                      title: Center(
+                                        child: Text("Eliminar movimiento"),
+                                      ),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "¿Está seguro de eliminar este movimiento?",
+                                          ),
+                                          Text(
+                                            stateFilter[index].description,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                       actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text("Cancelar"),
-                                        ),
-                                        TextButton(
-                                          onPressed: () async {
-                                            context
-                                                .read<GastosCubits>()
-                                                .sumGasto(
-                                                  stateFilter[index].gastoId,
-                                                  stateFilter[index].amount,
-                                                );
-                                            context
-                                                .read<GastosHistorialCubits>()
-                                                .dellGastoItem(
-                                                  stateFilter[index].id,
-                                                );
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text("Eliminar"),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: Colors.black26,
+                                              ),
+                                              child: const Text(
+                                                "Cancelar",
+                                                style: TextStyle(
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: () async {
+                                                context
+                                                    .read<GastosCubits>()
+                                                    .sumGasto(
+                                                      stateFilter[index]
+                                                          .gastoId,
+                                                      stateFilter[index].amount,
+                                                    );
+                                                context
+                                                    .read<
+                                                      GastosHistorialCubits
+                                                    >()
+                                                    .dellGastoItem(
+                                                      stateFilter[index].id,
+                                                    );
+                                                Navigator.pop(context);
+                                              },
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: Colors.black26,
+                                              ),
+                                              child: const Text(
+                                                "Eliminar",
+                                                style: TextStyle(
+                                                  color: Colors.green,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     );

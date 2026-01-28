@@ -20,7 +20,7 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Control de Gastos"),
+        title: const Text("Mis Presupuestos"),
         actions: [
           /*  IconButton(icon: const Icon(Icons.settings), onPressed: () {}), */
           IconButton(
@@ -118,14 +118,17 @@ class Home extends StatelessWidget {
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
-                                      title: const Text("Editar gasto"),
+                                      title: Center(
+                                        child: Text("Editar gasto"),
+                                      ),
                                       content: SizedBox(
-                                        height: 15.h,
+                                        height: 18.h,
                                         width: 80.w,
                                         child: Column(
                                           children: [
                                             TextField(
                                               controller: motivoController,
+                                              maxLength: 22,
                                               decoration: const InputDecoration(
                                                 labelText: "Motivo",
                                               ),
@@ -140,29 +143,52 @@ class Home extends StatelessWidget {
                                         ),
                                       ),
                                       actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text("Cancelar"),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            context
-                                                .read<GastosCubits>()
-                                                .updGasto(
-                                                  int.parse(
-                                                    idUpdateController.text,
-                                                  ),
-                                                  motivoController.text,
-                                                  double.parse(
-                                                    amountController.text,
-                                                  ),
-                                                  fecha,
-                                                );
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text("Actualizar"),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          //mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: Colors.black26,
+                                              ),
+                                              child: const Text(
+                                                "Cancelar",
+                                                style: TextStyle(
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                context
+                                                    .read<GastosCubits>()
+                                                    .updGasto(
+                                                      int.parse(
+                                                        idUpdateController.text,
+                                                      ),
+                                                      motivoController.text,
+                                                      double.parse(
+                                                        amountController.text,
+                                                      ),
+                                                      fecha,
+                                                    );
+                                                Navigator.pop(context);
+                                              },
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: Colors.black26,
+                                              ),
+                                              child: const Text(
+                                                "Actualizar",
+                                                style: TextStyle(
+                                                  color: Colors.green,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     );
@@ -177,11 +203,16 @@ class Home extends StatelessWidget {
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
-                                      title: Text(
-                                        "Agregar saldo ${state[index].motivo}",
+                                      title: Center(
+                                        child: Column(
+                                          children: [
+                                            Text("Agregar saldo"),
+                                            Text(state[index].motivo),
+                                          ],
+                                        ),
                                       ),
                                       content: SizedBox(
-                                        height: 15.h,
+                                        height: 10.h,
                                         width: 80.w,
                                         child: Column(
                                           children: [
@@ -195,28 +226,51 @@ class Home extends StatelessWidget {
                                         ),
                                       ),
                                       actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text("Cancelar"),
-                                        ),
-                                        TextButton(
-                                          onPressed: () async {
-                                            if (context.mounted) {
-                                              context
-                                                  .read<GastosCubits>()
-                                                  .sumGasto(
-                                                    state[index].id,
-                                                    double.parse(
-                                                      newAmountController.text,
-                                                    ),
-                                                  );
-                                              newAmountController.clear();
-                                              Navigator.pop(context);
-                                            }
-                                          },
-                                          child: const Text("Actualizar"),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: Colors.black26,
+                                              ),
+                                              child: const Text(
+                                                "Cancelar",
+                                                style: TextStyle(
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: () async {
+                                                if (context.mounted) {
+                                                  context
+                                                      .read<GastosCubits>()
+                                                      .sumGasto(
+                                                        state[index].id,
+                                                        double.parse(
+                                                          newAmountController
+                                                              .text,
+                                                        ),
+                                                      );
+                                                  newAmountController.clear();
+                                                  Navigator.pop(context);
+                                                }
+                                              },
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: Colors.black26,
+                                              ),
+                                              child: const Text(
+                                                "Agregar",
+                                                style: TextStyle(
+                                                  color: Colors.green,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     );
@@ -231,25 +285,55 @@ class Home extends StatelessWidget {
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
-                                      title: const Text("Eliminar gasto"),
-                                      content: Text(
-                                        "¿Está seguro de eliminar este gasto?",
+                                      title: Center(
+                                        child: Text("Eliminar gasto"),
+                                      ),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            "¿Está seguro de eliminar este gasto?",
+                                          ),
+                                          Text("${state[index].motivo}"),
+                                        ],
                                       ),
                                       actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text("Cancelar"),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            context
-                                                .read<GastosCubits>()
-                                                .dellGasto(state[index].id);
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text("Eliminar"),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: Colors.black26,
+                                              ),
+                                              child: const Text(
+                                                "Cancelar",
+                                                style: TextStyle(
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                context
+                                                    .read<GastosCubits>()
+                                                    .dellGasto(state[index].id);
+                                                Navigator.pop(context);
+                                              },
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: Colors.black26,
+                                              ),
+                                              child: const Text(
+                                                "Eliminar",
+                                                style: TextStyle(
+                                                  color: Colors.green,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     );

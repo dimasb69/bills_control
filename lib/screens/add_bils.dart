@@ -31,16 +31,21 @@ class NewControl extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        title: const Text("Nuevo Control"),
+        title: const Text("Nuevo Presupuesto"),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsetsGeometry.all(10),
+          padding: EdgeInsetsGeometry.only(
+            top: 30.dp,
+            left: 10.dp,
+            right: 10.dp,
+          ),
           child: Center(
             child: Column(
               children: [
                 TextField(
                   controller: motivoController,
+                  maxLength: 22,
                   decoration: const InputDecoration(
                     labelText: "Motivo / Concepto",
                     border: OutlineInputBorder(),
@@ -65,9 +70,24 @@ class NewControl extends StatelessWidget {
                 SizedBox(height: 8.h),
                 Center(
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      ElevatedButton(
+                      TextButton(
+                        onPressed: () {
+                          dateController.clear();
+                          motivoController.clear();
+                          amountController.clear();
+                          Navigator.pop(context);
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.black26,
+                        ),
+                        child: const Text(
+                          "Cancelar",
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                      TextButton(
                         onPressed: () async {
                           if (motivoController.text.length < 4) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -93,17 +113,13 @@ class NewControl extends StatelessWidget {
                             }
                           });
                         },
-                        child: const Text("Guardar"),
-                      ),
-                      SizedBox(width: 15.w),
-                      ElevatedButton(
-                        onPressed: () {
-                          dateController.clear();
-                          motivoController.clear();
-                          amountController.clear();
-                          Navigator.pop(context);
-                        },
-                        child: const Text("Cancelar"),
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.black26,
+                        ),
+                        child: const Text(
+                          "Guardar",
+                          style: TextStyle(color: Colors.green),
+                        ),
                       ),
                     ],
                   ),
