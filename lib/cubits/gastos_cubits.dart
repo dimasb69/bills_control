@@ -114,4 +114,8 @@ class GastosHistorialCubits extends Cubit<List<GastosItem>> {
       type,
     );
   }
+
+  void clearGastosItems() {
+    emit([]);
+  }
 }

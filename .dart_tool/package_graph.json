@@ -5,7 +5,7 @@
   "packages": [
     {
       "name": "bills_control",
-      "version": "1.0.0+1",
+      "version": "1.1.0+3",
       "dependencies": [
         "bloc",
         "cupertino_icons",
@@ -646,38 +646,11 @@
       ]
     },
     {
-      "name": "open_file_windows",
-      "version": "0.0.3",
-      "dependencies": [
-        "ffi",
-        "flutter",
-        "open_file_platform_interface"
-      ]
-    },
-    {
-      "name": "open_file_web",
-      "version": "0.0.4",
-      "dependencies": [
-        "flutter",
-        "flutter_web_plugins",
-        "open_file_platform_interface",
-        "web"
-      ]
-    },
-    {
       "name": "open_file_platform_interface",
       "version": "1.0.3",
       "dependencies": [
         "flutter",
         "plugin_platform_interface"
-      ]
-    },
-    {
-      "name": "open_file_mac",
-      "version": "1.0.4",
-      "dependencies": [
-        "flutter",
-        "open_file_platform_interface"
       ]
     },
     {
@@ -690,11 +663,38 @@
       ]
     },
     {
+      "name": "open_file_windows",
+      "version": "0.0.3",
+      "dependencies": [
+        "ffi",
+        "flutter",
+        "open_file_platform_interface"
+      ]
+    },
+    {
+      "name": "open_file_mac",
+      "version": "1.0.4",
+      "dependencies": [
+        "flutter",
+        "open_file_platform_interface"
+      ]
+    },
+    {
       "name": "open_file_ios",
       "version": "1.0.4",
       "dependencies": [
         "flutter",
         "open_file_platform_interface"
+      ]
+    },
+    {
+      "name": "open_file_web",
+      "version": "0.0.4",
+      "dependencies": [
+        "flutter",
+        "flutter_web_plugins",
+        "open_file_platform_interface",
+        "web"
       ]
     },
     {
@@ -919,17 +919,17 @@
       ]
     },
     {
-      "name": "flutter_web_plugins",
-      "version": "0.0.0",
-      "dependencies": [
-        "flutter"
-      ]
-    },
-    {
       "name": "plugin_platform_interface",
       "version": "2.1.8",
       "dependencies": [
         "meta"
+      ]
+    },
+    {
+      "name": "flutter_web_plugins",
+      "version": "0.0.0",
+      "dependencies": [
+        "flutter"
       ]
     },
     {

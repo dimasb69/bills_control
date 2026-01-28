@@ -17,7 +17,7 @@ Future<void> convertDataToExcel(int billId, BuildContext context) async {
   final gastos = await readGastoById(billId);
   final gastosItems = await readAllGastosItems();
 
-  Sheet sheetObject = excel[gastos.first.motivo];
+  Sheet sheetObject = excel['Sheet1'];
 
   // Añadir cabecera
   sheetObject.appendRow([
@@ -30,7 +30,9 @@ Future<void> convertDataToExcel(int billId, BuildContext context) async {
   for (var gastoItem in gastosItems) {
     if (gastoItem.gastoId == billId) {
       sheetObject.appendRow([
-        TextCellValue(gastoItem.date.toString()),
+        TextCellValue(
+          '${gastoItem.date.day}/${gastoItem.date.month}/${gastoItem.date.year}',
+        ),
         TextCellValue(gastoItem.description),
         TextCellValue(gastoItem.category),
         TextCellValue(gastoItem.amount.toString()),
@@ -39,15 +41,39 @@ Future<void> convertDataToExcel(int billId, BuildContext context) async {
   }
 
   var fileBytes = excel.save();
-  var directory = await getApplicationDocumentsDirectory();
-  File("${directory.path}/${gastos.first.motivo}.xlsx")
-    ..createSync(recursive: true)
-    ..writeAsBytesSync(fileBytes!);
+  var directory = await getDownloadsDirectory();
+  var fileName = "${directory?.path}/${gastos.first.motivo}.xlsx";
 
-  OpenFile.open("${directory.path}/${gastos.first.motivo}.xlsx");
+  var file = File(fileName);
+  if (file.existsSync()) {
+    file.deleteSync();
+  }
+  file.createSync(recursive: true);
+  file.writeAsBytesSync(fileBytes!);
 
-  print("${directory.path}/${gastos.first.motivo}.xlsx");
-  if (context.mounted) {
-    Navigator.pop(context);
+  try {
+    await OpenFile.open(file.path).then((value) {
+      if (context.mounted) {
+        Navigator.pop(context);
+        if (value.type == ResultType.done) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text("Archivo abierto")));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Error al abrir, Visor de Excel no instalado"),
+            ),
+          );
+        }
+      }
+    });
+  } catch (e) {
+    if (context.mounted) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error al abrir el archivo")));
+    }
   }
 }
