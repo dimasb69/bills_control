@@ -29,11 +29,11 @@ Future<void> testDatabase() async {
         ),
       );
 
-  List<GastosItem> allItems = await gastosDatabase
+  /*List<GastosItem> allItems = await gastosDatabase
       .select(gastosDatabase.gastosItems)
       .get();
 
   print('gastos in database: $allGastos');
   print('items in database: $allItems');
-  print('amountLeft: ${allGastos[0].amount - allItems[0].amount}');
+  print('amountLeft: ${allGastos[0].amount - allItems[0].amount}'); */
 }

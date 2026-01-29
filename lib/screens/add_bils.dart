@@ -4,6 +4,10 @@ import 'package:bills_control/data_base/gastos_crud.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
+import 'package:intl/intl.dart';
+
+// Define el formato exacto que tiene tu String
+DateFormat format = DateFormat("yyyy/M/d");
 
 List<Gasto> gastosList = [];
 TextEditingController motivoController = TextEditingController();
@@ -19,8 +23,7 @@ class NewControl extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
-    DateTime date = DateTime(now.year, now.month, now.day);
-    dateController.text = date.toString();
+    dateController.text = '${now.year}/${now.month}/${now.day}';
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(
@@ -53,6 +56,7 @@ class NewControl extends StatelessWidget {
                 ),
                 SizedBox(height: 5.h),
                 TextField(
+                  keyboardType: TextInputType.number,
                   controller: amountController,
                   decoration: const InputDecoration(
                     labelText: "Monto a manejar",
@@ -61,9 +65,10 @@ class NewControl extends StatelessWidget {
                 ),
                 SizedBox(height: 5.h),
                 TextField(
+                  keyboardType: TextInputType.number,
                   controller: dateController,
                   decoration: const InputDecoration(
-                    labelText: "Fecha de inicio",
+                    labelText: "Fecha",
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -101,7 +106,7 @@ class NewControl extends StatelessWidget {
                           }
                           await writeGasto(
                             motivoController.text,
-                            DateTime.parse(dateController.text),
+                            format.parse(dateController.text),
                             double.parse(amountController.text),
                           ).whenComplete(() async {
                             dateController.clear();

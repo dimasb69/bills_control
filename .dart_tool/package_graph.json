@@ -15,6 +15,7 @@
         "flutter",
         "flutter_bloc",
         "flutter_sizer",
+        "intl",
         "open_file",
         "path_provider",
         "toon",
@@ -117,6 +118,15 @@
         "stream_channel",
         "test_api",
         "vector_math"
+      ]
+    },
+    {
+      "name": "intl",
+      "version": "0.20.2",
+      "dependencies": [
+        "clock",
+        "meta",
+        "path"
       ]
     },
     {

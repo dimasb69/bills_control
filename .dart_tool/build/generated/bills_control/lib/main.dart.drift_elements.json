@@ -1,1 +1,0 @@
-{"valid_import":true,"imports":[{"uri":"package:bills_control/data_base/gastos.dart","transitive":false},{"uri":"package:bills_control/data_base/gastos_crud.dart","transitive":false},{"uri":"package:flutter/material.dart","transitive":false},{"uri":"package:bills_control/themes.dart","transitive":false}],"elements":[]}

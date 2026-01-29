@@ -1,17 +1,12 @@
-import 'package:bills_control/cubits/gastos_cubits.dart';
+import 'package:bills_control/cubits/cubits_all.dart';
 import 'package:bills_control/data_base/gastos.dart';
-import 'package:bills_control/data_base/gastos_crud.dart';
 import 'package:bills_control/excell/convert_data_to_excel.dart';
 import 'package:bills_control/screens/add_bils_history.dart';
-import 'package:bills_control/widgets/category_selector.dart';
+import 'package:bills_control/widgets/hystory_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 
-TextEditingController categoryController = TextEditingController();
-TextEditingController amountController = TextEditingController();
-TextEditingController descriptionController = TextEditingController();
-TextEditingController dateController = TextEditingController();
 List<GastosItem> stateFilter = [];
 int count = 0;
 
@@ -63,6 +58,7 @@ class GastosHistorial extends StatelessWidget {
         ),
         actions: [
           IconButton(
+            tooltip: "Agregar gasto",
             icon: const Icon(Icons.add),
             onPressed: () {
               Navigator.push(
@@ -76,7 +72,8 @@ class GastosHistorial extends StatelessWidget {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.share),
+            tooltip: "Exportar a Excel",
+            icon: const Icon(Icons.file_open),
             onPressed: () async {
               if (stateFilter.isNotEmpty) {
                 await convertDataToExcel(id, context);
@@ -101,15 +98,27 @@ class GastosHistorial extends StatelessWidget {
               return Container(
                 alignment: Alignment.center,
                 height: 100.h,
-                child: const Center(child: Text("Sin Movimientos")),
+                child: const Center(
+                  child: Text(
+                    "No existen movimientos, presiona el boton + para agregar uno",
+                    style: TextStyle(fontSize: 15),
+                  ),
+                ),
               );
             } else {
               return ListView.builder(
                 itemCount: stateFilter.length,
                 itemBuilder: (context, index) {
+                  final ghisto = context.read<GastosHistorialCubits>();
+                  final gasto = context.read<GastosCubits>();
                   return Container(
+                    margin: EdgeInsets.only(
+                      top: 10.dp,
+                      left: 5.dp,
+                      right: 5.dp,
+                    ),
                     decoration: BoxDecoration(
-                      border: Border(bottom: BorderSide(color: Colors.grey)),
+                      border: Border.all(color: Colors.blueGrey, width: 1.8.dp),
                     ),
                     alignment: Alignment.bottomCenter,
                     padding: EdgeInsets.only(
@@ -135,14 +144,14 @@ class GastosHistorial extends StatelessWidget {
                             Text(
                               stateFilter[index].category,
                               style: TextStyle(
-                                fontSize: 3.w,
+                                fontSize: 3.5.w,
                                 color: Colors.white,
                               ),
                             ),
                             Text(
                               "${stateFilter[index].amount} \$",
                               style: TextStyle(
-                                fontSize: 3.w,
+                                fontSize: 4.w,
                                 color: Colors.white,
                               ),
                             ),
@@ -155,220 +164,29 @@ class GastosHistorial extends StatelessWidget {
                             IconButton(
                               icon: Icon(Icons.edit, size: 15.dp),
                               onPressed: () {
-                                categoryController.text =
-                                    stateFilter[index].category;
-                                amountController.text = stateFilter[index]
-                                    .amount
-                                    .toString();
-                                descriptionController.text =
-                                    stateFilter[index].description;
-                                dateController.text = stateFilter[index].date
-                                    .toString();
-                                final idBills = stateFilter[index].gastoId;
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    final currentAmount =
-                                        stateFilter[index].amount;
-                                    return AlertDialog(
-                                      title: Center(
-                                        child: Text("Editar gasto"),
-                                      ),
-                                      content: SizedBox(
-                                        height: 33.h,
-                                        width: 80.w,
-                                        child: Column(
-                                          children: [
-                                            TextField(
-                                              controller: descriptionController,
-                                              maxLength: 30,
-                                              decoration: const InputDecoration(
-                                                labelText: "Concepto",
-                                              ),
-                                            ),
-                                            CategorySelector(
-                                              controller: categoryController,
-                                            ),
-                                            TextField(
-                                              controller: dateController,
-                                              decoration: const InputDecoration(
-                                                labelText: "Fecha",
-                                              ),
-                                            ),
-                                            TextField(
-                                              controller: amountController,
-                                              decoration: const InputDecoration(
-                                                labelText: "Monto",
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      actions: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          //mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              style: TextButton.styleFrom(
-                                                backgroundColor: Colors.black26,
-                                              ),
-                                              child: const Text(
-                                                "Cancelar",
-                                                style: TextStyle(
-                                                  color: Colors.red,
-                                                ),
-                                              ),
-                                            ),
-                                            TextButton(
-                                              onPressed: () async {
-                                                if (double.parse(
-                                                      amountController.text,
-                                                    ) !=
-                                                    currentAmount) {
-                                                  await sumarGasto(
-                                                    idBills,
-                                                    currentAmount,
-                                                  );
-                                                  if (context.mounted) {
-                                                    context
-                                                        .read<GastosCubits>()
-                                                        .sumGasto(
-                                                          idBills,
-                                                          currentAmount,
-                                                        );
-                                                  }
-                                                  await restarGasto(
-                                                    idBills,
-                                                    double.parse(
-                                                      amountController.text,
-                                                    ),
-                                                  );
-                                                }
-                                                if (context.mounted) {
-                                                  context
-                                                      .read<
-                                                        GastosHistorialCubits
-                                                      >()
-                                                      .updGastoItem(
-                                                        stateFilter[index].id,
-                                                        idBills,
-                                                        descriptionController
-                                                            .text,
-                                                        double.parse(
-                                                          amountController.text,
-                                                        ),
-                                                        DateTime.parse(
-                                                          dateController.text,
-                                                        ),
-                                                        categoryController.text,
-                                                        '',
-                                                      );
-                                                  stateFilter = [];
-                                                  Navigator.pop(context);
-                                                }
-                                              },
-                                              style: TextButton.styleFrom(
-                                                backgroundColor: Colors.black26,
-                                              ),
-                                              child: const Text(
-                                                "Actualizar",
-                                                style: TextStyle(
-                                                  color: Colors.green,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    );
-                                  },
+                                editGastoItem(
+                                  context,
+                                  index,
+                                  stateFilter,
+                                  ghisto,
+                                  gasto,
                                 );
+                                stateFilter = [];
                               },
                             ),
                             IconButton(
                               icon: Icon(Icons.delete, size: 15.dp),
                               onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      title: Center(
-                                        child: Text("Eliminar movimiento"),
-                                      ),
-                                      content: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            "¿Está seguro de eliminar este movimiento?",
-                                          ),
-                                          Text(
-                                            stateFilter[index].description,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      actions: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              style: TextButton.styleFrom(
-                                                backgroundColor: Colors.black26,
-                                              ),
-                                              child: const Text(
-                                                "Cancelar",
-                                                style: TextStyle(
-                                                  color: Colors.red,
-                                                ),
-                                              ),
-                                            ),
-                                            TextButton(
-                                              onPressed: () async {
-                                                context
-                                                    .read<GastosCubits>()
-                                                    .sumGasto(
-                                                      stateFilter[index]
-                                                          .gastoId,
-                                                      stateFilter[index].amount,
-                                                    );
-                                                context
-                                                    .read<
-                                                      GastosHistorialCubits
-                                                    >()
-                                                    .dellGastoItem(
-                                                      stateFilter[index].id,
-                                                    );
-                                                Navigator.pop(context);
-                                              },
-                                              style: TextButton.styleFrom(
-                                                backgroundColor: Colors.black26,
-                                              ),
-                                              child: const Text(
-                                                "Eliminar",
-                                                style: TextStyle(
-                                                  color: Colors.green,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    );
-                                  },
+                                deleteGastoItem(
+                                  context,
+                                  stateFilter[index].gastoId,
+                                  stateFilter[index].id,
+                                  index,
+                                  stateFilter,
+                                  ghisto,
+                                  gasto,
                                 );
+                                stateFilter = [];
                               },
                             ),
                           ],

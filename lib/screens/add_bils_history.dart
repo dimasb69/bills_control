@@ -1,12 +1,15 @@
-import 'package:bills_control/cubits/gastos_cubits.dart';
+import 'package:bills_control/cubits/cubits_all.dart';
 import 'package:bills_control/data_base/gastos.dart';
 import 'package:bills_control/data_base/gastos_crud.dart';
 import 'package:bills_control/screens/gastos_historial.dart';
-import 'package:bills_control/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bills_control/widgets/category_selector.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
+import 'package:intl/intl.dart';
+
+// Define el formato exacto que tiene tu String
+DateFormat format = DateFormat("yyyy/M/d");
 
 List<Gasto> gastosList = [];
 TextEditingController descriptionController = TextEditingController();
@@ -23,8 +26,7 @@ class GastosHistorialAdd extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
-    DateTime date = DateTime(now.year, now.month, now.day);
-    dateController.text = date.toString();
+    dateController.text = '${now.year}/${now.month}/${now.day}';
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(
@@ -60,6 +62,7 @@ class GastosHistorialAdd extends StatelessWidget {
                 CategorySelector(controller: categoryController),
                 SizedBox(height: 5.h),
                 TextField(
+                  keyboardType: TextInputType.number,
                   controller: amountController,
                   decoration: const InputDecoration(
                     labelText: "Monto a descontar",
@@ -68,6 +71,7 @@ class GastosHistorialAdd extends StatelessWidget {
                 ),
                 SizedBox(height: 5.h),
                 TextField(
+                  keyboardType: TextInputType.number,
                   controller: dateController,
                   decoration: const InputDecoration(
                     labelText: "Fecha de inicio",
@@ -82,7 +86,8 @@ class GastosHistorialAdd extends StatelessWidget {
                       TextButton(
                         onPressed: () {
                           dateController.clear();
-                          motivoController.clear();
+                          descriptionController.clear();
+                          categoryController.clear();
                           amountController.clear();
                           Navigator.pop(context);
                         },
@@ -113,10 +118,11 @@ class GastosHistorialAdd extends StatelessWidget {
                             );
                             return;
                           }
+                          DateTime temp = format.parse(dateController.text);
                           await writeGastoItem(
                             id,
                             descriptionController.text,
-                            DateTime.parse(dateController.text),
+                            temp,
                             double.parse(amountController.text),
                             categoryController.text,
                             '',

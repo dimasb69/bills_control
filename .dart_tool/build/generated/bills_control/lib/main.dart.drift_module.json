@@ -1,9 +1,0 @@
-{
-  "elements": {},
-  "imports": [
-    "package:bills_control/data_base/gastos.dart",
-    "package:bills_control/data_base/gastos_crud.dart",
-    "package:flutter/material.dart",
-    "package:bills_control/themes.dart"
-  ]
-}
