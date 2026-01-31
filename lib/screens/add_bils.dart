@@ -1,6 +1,7 @@
 import 'package:bills_control/cubits/gastos_cubits.dart';
 import 'package:bills_control/data_base/gastos.dart';
 import 'package:bills_control/data_base/gastos_crud.dart';
+import 'package:bills_control/widgets/dev_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
@@ -134,6 +135,7 @@ class NewControl extends StatelessWidget {
           ),
         ),
       ),
+      bottomNavigationBar: bottomDevName(),
     );
   }
 }

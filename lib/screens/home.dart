@@ -3,6 +3,7 @@ import 'package:bills_control/data_base/gastos.dart';
 import 'package:bills_control/screens/add_bils.dart';
 import 'package:bills_control/screens/gastos_historial.dart';
 import 'package:bills_control/widgets/bils_widgets.dart';
+import 'package:bills_control/widgets/dev_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
@@ -155,6 +156,7 @@ class Home extends StatelessWidget {
           },
         ),
       ),
+      bottomNavigationBar: bottomDevName(),
     );
   }
 }

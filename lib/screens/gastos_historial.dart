@@ -2,6 +2,7 @@ import 'package:bills_control/cubits/cubits_all.dart';
 import 'package:bills_control/data_base/gastos.dart';
 import 'package:bills_control/excell/convert_data_to_excel.dart';
 import 'package:bills_control/screens/add_bils_history.dart';
+import 'package:bills_control/widgets/dev_name.dart';
 import 'package:bills_control/widgets/hystory_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -200,6 +201,7 @@ class GastosHistorial extends StatelessWidget {
           },
         ),
       ),
+      bottomNavigationBar: bottomDevName(),
     );
   }
 }
