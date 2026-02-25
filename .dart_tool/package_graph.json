@@ -5,7 +5,7 @@
   "packages": [
     {
       "name": "bills_control",
-      "version": "1.1.0+3",
+      "version": "0.1.0+1",
       "dependencies": [
         "bloc",
         "cupertino_icons",
@@ -26,6 +26,7 @@
         "build_runner",
         "drift_dev",
         "flutter_lints",
+        "flutter_localizations",
         "flutter_test"
       ]
     },
@@ -101,6 +102,15 @@
       "version": "6.0.0",
       "dependencies": [
         "lints"
+      ]
+    },
+    {
+      "name": "flutter_localizations",
+      "version": "0.0.0",
+      "dependencies": [
+        "flutter",
+        "intl",
+        "path"
       ]
     },
     {

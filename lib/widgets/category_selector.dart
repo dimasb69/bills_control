@@ -1,5 +1,6 @@
 import 'package:bills_control/cubits/constant_cubits.dart';
 import 'package:bills_control/cubits/data_cubits_models.dart';
+import 'package:bills_control/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,8 +14,8 @@ class CategorySelector extends StatelessWidget {
     return TextField(
       controller: controller,
       readOnly: true,
-      decoration: const InputDecoration(
-        labelText: "Categoria",
+      decoration: InputDecoration(
+        labelText: AppLocalizations.of(context)!.texto_categoria,
         border: OutlineInputBorder(),
         suffixIcon: Icon(Icons.arrow_drop_down),
       ),
@@ -41,20 +42,25 @@ class CategorySelectionSheet extends StatelessWidget {
       length: 2,
       child: Column(
         children: [
-          const TabBar(
+          TabBar(
             tabs: [
-              Tab(text: "Hogar"),
-              Tab(text: "Trabajo"),
+              Tab(text: AppLocalizations.of(context)!.texto_hogar),
+              Tab(text: AppLocalizations.of(context)!.texto_trabajo),
             ],
             labelColor: Colors.blue,
             unselectedLabelColor: Colors.grey,
           ),
           Expanded(
             child: TabBarView(
-              children: [
-                _CategoryList<CateHomeCubit>(),
-                _CategoryList<CateWorkCubit>(),
-              ],
+              children: AppLocalizations.of(context)!.texto_hogar == 'Home'
+                  ? [
+                      _CategoryList<CateHomeEnCubit>(),
+                      _CategoryList<CateWorkEnCubit>(),
+                    ]
+                  : [
+                      _CategoryList<CateHomeEsCubit>(),
+                      _CategoryList<CateWorkEsCubit>(),
+                    ],
             ),
           ),
         ],

@@ -1,3 +1,5 @@
+import 'package:bills_control/l10n/app_localizations.dart'
+    show AppLocalizations;
 import 'package:bills_control/widgets/category_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:bills_control/data_base/gastos.dart';
@@ -32,7 +34,9 @@ Future<void> editGastoItem(
     builder: (context) {
       final currentAmount = stateFilter[index].amount;
       return AlertDialog(
-        title: Center(child: Text("Editar gasto")),
+        title: Center(
+          child: Text(AppLocalizations.of(context)!.texto_editar_gasto),
+        ),
         content: SizedBox(
           height: 33.h,
           width: 80.w,
@@ -41,18 +45,24 @@ Future<void> editGastoItem(
               TextField(
                 controller: descriptionController,
                 maxLength: 30,
-                decoration: const InputDecoration(labelText: "Concepto"),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.etiqueta_motivo,
+                ),
               ),
               CategorySelector(controller: categoryController),
               TextField(
                 keyboardType: TextInputType.number,
                 controller: dateController,
-                decoration: const InputDecoration(labelText: "Fecha"),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.etiqueta_fecha,
+                ),
               ),
               TextField(
                 keyboardType: TextInputType.number,
                 controller: amountController,
-                decoration: const InputDecoration(labelText: "Monto"),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.etiqueta_monto,
+                ),
               ),
             ],
           ),
@@ -67,8 +77,8 @@ Future<void> editGastoItem(
                   Navigator.pop(context);
                 },
                 style: TextButton.styleFrom(backgroundColor: Colors.black26),
-                child: const Text(
-                  "Cancelar",
+                child: Text(
+                  AppLocalizations.of(context)!.etiqueta_cancelar,
                   style: TextStyle(color: Colors.red),
                 ),
               ),
@@ -100,8 +110,8 @@ Future<void> editGastoItem(
                   }
                 },
                 style: TextButton.styleFrom(backgroundColor: Colors.black26),
-                child: const Text(
-                  "Actualizar",
+                child: Text(
+                  AppLocalizations.of(context)!.etiqueta_actualizar,
                   style: TextStyle(color: Colors.green),
                 ),
               ),
@@ -126,12 +136,16 @@ Future<void> deleteGastoItem(
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Center(child: Text("Eliminar movimiento")),
+        title: Center(
+          child: Text(AppLocalizations.of(context)!.texto_eliminar_gasto),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("¿Está seguro de eliminar este movimiento?"),
+            Text(
+              AppLocalizations.of(context)!.texto_eliminar_gasto_confirmacion,
+            ),
             Text(
               stateFilter[index].description,
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -147,8 +161,8 @@ Future<void> deleteGastoItem(
                   Navigator.pop(context);
                 },
                 style: TextButton.styleFrom(backgroundColor: Colors.black26),
-                child: const Text(
-                  "Cancelar",
+                child: Text(
+                  AppLocalizations.of(context)!.etiqueta_cancelar,
                   style: TextStyle(color: Colors.red),
                 ),
               ),
@@ -162,8 +176,8 @@ Future<void> deleteGastoItem(
                   Navigator.pop(context);
                 },
                 style: TextButton.styleFrom(backgroundColor: Colors.black26),
-                child: const Text(
-                  "Eliminar",
+                child: Text(
+                  AppLocalizations.of(context)!.toolTip_delete,
                   style: TextStyle(color: Colors.green),
                 ),
               ),

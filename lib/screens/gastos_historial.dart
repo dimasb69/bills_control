@@ -1,6 +1,7 @@
 import 'package:bills_control/cubits/cubits_all.dart';
 import 'package:bills_control/data_base/gastos.dart';
 import 'package:bills_control/excell/convert_data_to_excel.dart';
+import 'package:bills_control/l10n/app_localizations.dart';
 import 'package:bills_control/screens/add_bils_history.dart';
 import 'package:bills_control/widgets/dev_name.dart';
 import 'package:bills_control/widgets/hystory_widgets.dart';
@@ -43,7 +44,10 @@ class GastosHistorial extends StatelessWidget {
                 final gastoC = state.firstWhere((element) => element.id == id);
                 return Row(
                   children: [
-                    Text(name, style: TextStyle(fontSize: 14.dp)),
+                    Text(
+                      name.length > 16 ? name.substring(0, 16) : name,
+                      style: TextStyle(fontSize: 14.dp),
+                    ),
                     Text(
                       " - ${gastoC.amount} \$",
                       style: TextStyle(
@@ -59,7 +63,7 @@ class GastosHistorial extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            tooltip: "Agregar gasto",
+            tooltip: AppLocalizations.of(context)!.toolTip_add_gasto,
             icon: const Icon(Icons.add),
             onPressed: () {
               Navigator.push(
@@ -73,14 +77,18 @@ class GastosHistorial extends StatelessWidget {
             },
           ),
           IconButton(
-            tooltip: "Exportar a Excel",
+            tooltip: AppLocalizations.of(context)!.toolTip_export,
             icon: const Icon(Icons.file_open),
             onPressed: () async {
               if (stateFilter.isNotEmpty) {
                 await convertDataToExcel(id, context);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("No hay datos para exportar")),
+                  SnackBar(
+                    content: Text(
+                      AppLocalizations.of(context)!.no_data_to_export,
+                    ),
+                  ),
                 );
               }
             },
@@ -99,9 +107,9 @@ class GastosHistorial extends StatelessWidget {
               return Container(
                 alignment: Alignment.center,
                 height: 100.h,
-                child: const Center(
+                child: Center(
                   child: Text(
-                    "No existen movimientos, presiona el boton + para agregar uno",
+                    AppLocalizations.of(context)!.no_items_history,
                     style: TextStyle(fontSize: 15),
                   ),
                 ),
@@ -164,6 +172,9 @@ class GastosHistorial extends StatelessWidget {
                           children: [
                             IconButton(
                               icon: Icon(Icons.edit, size: 15.dp),
+                              tooltip: AppLocalizations.of(
+                                context,
+                              )!.toolTip_edit,
                               onPressed: () {
                                 editGastoItem(
                                   context,
@@ -177,6 +188,9 @@ class GastosHistorial extends StatelessWidget {
                             ),
                             IconButton(
                               icon: Icon(Icons.delete, size: 15.dp),
+                              tooltip: AppLocalizations.of(
+                                context,
+                              )!.toolTip_delete,
                               onPressed: () {
                                 deleteGastoItem(
                                   context,

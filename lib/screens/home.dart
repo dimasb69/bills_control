@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 
+import '../l10n/app_localizations.dart';
+
 class Home extends StatelessWidget {
   const Home({super.key});
 
@@ -16,7 +18,7 @@ class Home extends StatelessWidget {
     final gCubit = context.read<GastosCubits>();
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Presupuestos"),
+        title: Text(AppLocalizations.of(context)!.tittle_name),
         actions: [
           IconButton(
             icon: const Icon(Icons.help),
@@ -24,9 +26,11 @@ class Home extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (context) {
-                  return const AlertDialog(
+                  return AlertDialog(
                     content: Text(
-                      "Presiona sobre el presupuesto para ver su historial y editar gastos",
+                      gCubit.state.isEmpty
+                          ? AppLocalizations.of(context)!.no_items
+                          : AppLocalizations.of(context)!.toolTip_items,
                     ),
                   );
                 },
@@ -34,7 +38,7 @@ class Home extends StatelessWidget {
             },
           ),
           IconButton(
-            tooltip: "Agregar presupuesto",
+            tooltip: AppLocalizations.of(context)!.toolTip_add_new,
             icon: const Icon(Icons.add),
             onPressed: () {
               Navigator.push(
@@ -52,10 +56,14 @@ class Home extends StatelessWidget {
               return Container(
                 alignment: Alignment.center,
                 height: 100.h,
-                child: const Center(
-                  child: Text(
-                    "No posees presupuestos, presiona el boton + para agregar uno",
-                    style: TextStyle(fontSize: 15),
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsetsGeometry.only(left: 10, right: 10),
+                    child: Text(
+                      AppLocalizations.of(context)!.no_items,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 15),
+                    ),
                   ),
                 ),
               );
@@ -95,7 +103,9 @@ class Home extends StatelessWidget {
                             );
                           },
                           child: Tooltip(
-                            message: "Ver/Editar historial",
+                            message: AppLocalizations.of(
+                              context,
+                            )!.tootTip_history,
                             child: Container(
                               alignment: Alignment.centerLeft,
                               padding: EdgeInsets.only(left: 18.dp),
@@ -129,18 +139,27 @@ class Home extends StatelessWidget {
                           children: [
                             IconButton(
                               icon: Icon(Icons.edit, size: 15.dp),
+                              tooltip: AppLocalizations.of(
+                                context,
+                              )!.toolTip_edit,
                               onPressed: () {
                                 editGasto(state, index, context, gCubit);
                               },
                             ),
                             IconButton(
                               icon: Icon(Icons.add, size: 15.dp),
+                              tooltip: AppLocalizations.of(
+                                context,
+                              )!.toolTip_agregar_saldo,
                               onPressed: () {
                                 agregarSaldo(state, index, context, gCubit);
                               },
                             ),
                             IconButton(
                               icon: Icon(Icons.delete, size: 15.dp),
+                              tooltip: AppLocalizations.of(
+                                context,
+                              )!.toolTip_delete,
                               onPressed: () {
                                 deleteGasto(state, index, context, gCubit);
                               },

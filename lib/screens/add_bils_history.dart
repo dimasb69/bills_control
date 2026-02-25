@@ -1,6 +1,7 @@
 import 'package:bills_control/cubits/cubits_all.dart';
 import 'package:bills_control/data_base/gastos.dart';
 import 'package:bills_control/data_base/gastos_crud.dart';
+import 'package:bills_control/l10n/app_localizations.dart';
 import 'package:bills_control/screens/gastos_historial.dart';
 import 'package:bills_control/widgets/dev_name.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,12 @@ class GastosHistorialAdd extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        title: Text("Nuevo movimiento $name"),
+        title: Text(
+          name.length > 14
+              ? "${AppLocalizations.of(context)!.tittle_add_new_history} ${name.substring(0, 14)}..."
+              : "${AppLocalizations.of(context)!.tittle_add_new_history} $name",
+          style: TextStyle(fontSize: 14.dp),
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -54,8 +60,10 @@ class GastosHistorialAdd extends StatelessWidget {
                 TextField(
                   controller: descriptionController,
                   maxLength: 30,
-                  decoration: const InputDecoration(
-                    labelText: "Descripcion",
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(
+                      context,
+                    )!.etiueta_descripcion,
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -65,8 +73,10 @@ class GastosHistorialAdd extends StatelessWidget {
                 TextField(
                   keyboardType: TextInputType.number,
                   controller: amountController,
-                  decoration: const InputDecoration(
-                    labelText: "Monto a descontar",
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(
+                      context,
+                    )!.etiqueta_monto_descuento,
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -74,8 +84,10 @@ class GastosHistorialAdd extends StatelessWidget {
                 TextField(
                   keyboardType: TextInputType.number,
                   controller: dateController,
-                  decoration: const InputDecoration(
-                    labelText: "Fecha de inicio",
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(
+                      context,
+                    )!.etiqueta_fecha_inicio,
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -95,8 +107,8 @@ class GastosHistorialAdd extends StatelessWidget {
                         style: TextButton.styleFrom(
                           backgroundColor: Colors.black26,
                         ),
-                        child: const Text(
-                          "Cancelar",
+                        child: Text(
+                          AppLocalizations.of(context)!.etiqueta_cancelar,
                           style: TextStyle(color: Colors.red),
                         ),
                       ),
@@ -151,8 +163,8 @@ class GastosHistorialAdd extends StatelessWidget {
                         style: TextButton.styleFrom(
                           backgroundColor: Colors.black26,
                         ),
-                        child: const Text(
-                          "Guardar",
+                        child: Text(
+                          AppLocalizations.of(context)!.etiqueta_guardar,
                           style: TextStyle(color: Colors.green),
                         ),
                       ),

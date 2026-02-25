@@ -1,4 +1,6 @@
 import 'package:bills_control/cubits/cubits_all.dart';
+import 'package:bills_control/l10n/app_localizations.dart'
+    show AppLocalizations;
 import 'package:flutter/material.dart';
 import 'package:bills_control/data_base/gastos.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
@@ -24,7 +26,9 @@ Future<void> editGasto(
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Center(child: Text("Editar gasto")),
+        title: Center(
+          child: Text(AppLocalizations.of(context)!.texto_editar_presupuesto),
+        ),
         content: SizedBox(
           height: 18.h,
           width: 80.w,
@@ -33,12 +37,16 @@ Future<void> editGasto(
               TextField(
                 controller: motivoController,
                 maxLength: 22,
-                decoration: const InputDecoration(labelText: "Motivo"),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.etiqueta_motivo,
+                ),
               ),
               TextField(
                 keyboardType: TextInputType.number,
                 controller: amountController,
-                decoration: const InputDecoration(labelText: "Monto"),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.etiqueta_monto,
+                ),
               ),
             ],
           ),
@@ -53,8 +61,8 @@ Future<void> editGasto(
                   Navigator.pop(context);
                 },
                 style: TextButton.styleFrom(backgroundColor: Colors.black26),
-                child: const Text(
-                  "Cancelar",
+                child: Text(
+                  AppLocalizations.of(context)!.etiqueta_cancelar,
                   style: TextStyle(color: Colors.red),
                 ),
               ),
@@ -69,8 +77,8 @@ Future<void> editGasto(
                   Navigator.pop(context);
                 },
                 style: TextButton.styleFrom(backgroundColor: Colors.black26),
-                child: const Text(
-                  "Actualizar",
+                child: Text(
+                  AppLocalizations.of(context)!.etiqueta_actualizar,
                   style: TextStyle(color: Colors.green),
                 ),
               ),
@@ -94,7 +102,10 @@ Future<void> agregarSaldo(
       return AlertDialog(
         title: Center(
           child: Column(
-            children: [Text("Agregar saldo"), Text(state[index].motivo)],
+            children: [
+              Text(AppLocalizations.of(context)!.toolTip_agregar_saldo),
+              Text(state[index].motivo),
+            ],
           ),
         ),
         content: SizedBox(
@@ -105,7 +116,9 @@ Future<void> agregarSaldo(
               TextField(
                 keyboardType: TextInputType.number,
                 controller: newAmountController,
-                decoration: const InputDecoration(labelText: "Monto"),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.etiqueta_monto,
+                ),
               ),
             ],
           ),
@@ -136,8 +149,8 @@ Future<void> agregarSaldo(
                   }
                 },
                 style: TextButton.styleFrom(backgroundColor: Colors.black26),
-                child: const Text(
-                  "Agregar",
+                child: Text(
+                  AppLocalizations.of(context)!.etiqueta_guardar,
                   style: TextStyle(color: Colors.green),
                 ),
               ),
@@ -159,11 +172,17 @@ Future<void> deleteGasto(
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Center(child: Text("Eliminar gasto")),
+        title: Center(
+          child: Text(AppLocalizations.of(context)!.texto_eliminar_presupuesto),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text("¿Está seguro de eliminar este gasto?"),
+            Text(
+              AppLocalizations.of(
+                context,
+              )!.texto_eliminar_presupuesto_confirmacion,
+            ),
             Text(state[index].motivo),
           ],
         ),
@@ -176,8 +195,8 @@ Future<void> deleteGasto(
                   Navigator.pop(context);
                 },
                 style: TextButton.styleFrom(backgroundColor: Colors.black26),
-                child: const Text(
-                  "Cancelar",
+                child: Text(
+                  AppLocalizations.of(context)!.etiqueta_cancelar,
                   style: TextStyle(color: Colors.red),
                 ),
               ),
@@ -187,8 +206,8 @@ Future<void> deleteGasto(
                   Navigator.pop(context);
                 },
                 style: TextButton.styleFrom(backgroundColor: Colors.black26),
-                child: const Text(
-                  "Eliminar",
+                child: Text(
+                  AppLocalizations.of(context)!.toolTip_delete,
                   style: TextStyle(color: Colors.green),
                 ),
               ),

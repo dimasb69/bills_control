@@ -1,9 +1,9 @@
 name: bills_control
 description: "A new Flutter project."
 
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+#publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.1.0+3
+version: 0.1.0+1
 
 environment:
   sdk: ^3.10.1
@@ -31,13 +31,15 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   flutter_lints: ^6.0.0
   drift_dev: ^2.30.1
   build_runner: ^2.10.5
 
 flutter:
-
+  generate: true
   uses-material-design: true
 
   assets:

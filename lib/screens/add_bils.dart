@@ -1,6 +1,7 @@
 import 'package:bills_control/cubits/gastos_cubits.dart';
 import 'package:bills_control/data_base/gastos.dart';
 import 'package:bills_control/data_base/gastos_crud.dart';
+import 'package:bills_control/l10n/app_localizations.dart';
 import 'package:bills_control/widgets/dev_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,7 +36,7 @@ class NewControl extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        title: const Text("Nuevo Presupuesto"),
+        title: Text(AppLocalizations.of(context)!.tittle_add_new),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -50,8 +51,8 @@ class NewControl extends StatelessWidget {
                 TextField(
                   controller: motivoController,
                   maxLength: 22,
-                  decoration: const InputDecoration(
-                    labelText: "Motivo / Concepto",
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.etiqueta_motivo,
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -59,8 +60,8 @@ class NewControl extends StatelessWidget {
                 TextField(
                   keyboardType: TextInputType.number,
                   controller: amountController,
-                  decoration: const InputDecoration(
-                    labelText: "Monto a manejar",
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.etiqueta_monto,
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -68,8 +69,8 @@ class NewControl extends StatelessWidget {
                 TextField(
                   keyboardType: TextInputType.number,
                   controller: dateController,
-                  decoration: const InputDecoration(
-                    labelText: "Fecha",
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.etiqueta_fecha,
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -88,8 +89,8 @@ class NewControl extends StatelessWidget {
                         style: TextButton.styleFrom(
                           backgroundColor: Colors.black26,
                         ),
-                        child: const Text(
-                          "Cancelar",
+                        child: Text(
+                          AppLocalizations.of(context)!.etiqueta_cancelar,
                           style: TextStyle(color: Colors.red),
                         ),
                       ),
@@ -122,8 +123,8 @@ class NewControl extends StatelessWidget {
                         style: TextButton.styleFrom(
                           backgroundColor: Colors.black26,
                         ),
-                        child: const Text(
-                          "Guardar",
+                        child: Text(
+                          AppLocalizations.of(context)!.etiqueta_guardar,
                           style: TextStyle(color: Colors.green),
                         ),
                       ),

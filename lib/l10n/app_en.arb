@@ -1,0 +1,119 @@
+{
+    "tittle_name": "My Budget",
+    "@tittle_name": {
+        "description": "Titulo de la app"
+        },
+    "no_items": "No items, press + to add one",
+    "@no_items": {
+        "description": "Mensaje cuando no hay registros"
+        },
+    "no_items_history": "No transactions, press + to add one",
+    "@no_items_history": {
+        "description": "Mensaje cuando no hay registros en el historial"
+        },
+    "toolTip_items": "Press on a items to edit or view history of expenses ",
+    "@toolTil_items":{
+        "description": "Texto del Tool tip para los items"
+        },
+    "toolTip_add_new": "Add new",
+    "@toolTil_add_new":{
+            "description": "Texto del Tool tip para los items"
+        },
+    "tootTip_history": "View | Edit History",
+    "@tootTip_history":{
+                "description": "tool tip del boton history"
+        },
+    "tittle_add_new": "New Bills",
+    "@tittle_add_new": {
+            "description": "Titulo Agregar nuevo"
+        },
+    "etiqueta_motivo": "Concept / Reason",
+    "@etiqueta_motivo":{
+        "description": "Etiqueta del TextEdit Motivo"
+    },
+    "etiqueta_monto": "Amount to manage",
+    "@etiqueta_monto":{
+        "description": "Etiqueta del TextEdit Monto"
+    },
+    "etiqueta_fecha": "Date",
+    "@etiqueta_fecha":{
+        "description": "Etiqueta del TextEdit Fecha"
+    }, 
+    "etiqueta_guardar": "Save",
+    "@etiqueta_guardar":{
+        "description": "Etiqueta del boton Guardar"
+    },
+    "etiqueta_actualizar": "Update",
+    "@etiqueta_actualizar":{
+        "description": "Etiqueta del boton Actualizar"
+    },
+    "etiqueta_cancelar": "Cancel",
+    "@etiqueta_cancelar":{
+        "description": "Etiqueta del boton Cancelar"
+    },
+    "no_data_to_export": "No data to export",
+    "@no_data_to_export":{
+        "description": "Mensaje cuando no hay datos para exportar"
+    },
+    "toolTip_export": "Export to Excel",
+    "@toolTip_export":{
+        "description": "tool tip del boton exportar"
+    },
+    "toolTip_add_gasto": "Add Expense",
+    "@toolTip_add_gasto":{
+        "description": "tool tip del boton agregar gasto"
+    },
+    "toolTip_export": "Export to Excel",
+    "@toolTip_export":{
+        "description": "tool tip del boton exportar"
+    },
+    "tittle_add_new_history": "New movement to",
+    "@tittle_add_new_history":{
+        "description": "Titulo Agregar nuevo movimiento"
+    },
+    "etiueta_descripcion": "Description of the expense",
+    "@etiueta_descripcion":{
+        "description": "Etiqueta del TextEdit Descripcion"
+    },
+    "texto_hogar": "Home",
+    "texto_trabajo": "Work",
+    "texto_categoria": "Category",
+    "etiqueta_monto_descuento": "Amount to discount",
+    "etiqueta_fecha_inicio": "Start date",
+    "toolTip_edit": "Edit",
+    "@toolTip_edit":{
+        "description": "tool tip del boton editar"
+    },
+    "toolTip_delete": "Delete",
+    "@toolTip_delete":{
+        "description": "tool tip del boton eliminar"
+    },    
+    "toolTip_agregar_saldo": "Add Balance",
+    "@toolTip_agregar_saldo":{
+        "description": "tool tip del boton agregar saldo"
+    },
+    "texto_editar_gasto": "Edit Expense",
+    "@texto_editar_gasto":{
+        "description": "texto del titulo editar gasto"
+    },
+    "texto_eliminar_gasto": "Delete Expense",
+    "@texto_eliminar_gasto":{
+        "description": "texto del titulo eliminar gasto"
+    },
+    "texto_eliminar_gasto_confirmacion": "Are you sure you want to delete this expense?",
+    "@texto_eliminar_gasto_confirmacion":{
+        "description": "texto de confirmacion eliminar gasto"
+    },
+    "texto_editar_presupuesto": "Edit Budget",
+    "@texto_editar_presupuesto":{
+        "description": "texto del titulo editar presupuesto"
+    },
+    "texto_eliminar_presupuesto": "Delete Budget",
+    "@texto_eliminar_presupuesto":{
+        "description": "texto del titulo eliminar presupuesto"
+    },
+    "texto_eliminar_presupuesto_confirmacion": "Are you sure you want to delete this budget?",
+    "@texto_eliminar_presupuesto_confirmacion":{
+        "description": "texto de confirmacion eliminar presupuesto"
+    }
+}

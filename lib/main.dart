@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bills_control/cubits/cubits_all.dart';
 
+import 'l10n/app_localizations.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -21,8 +23,10 @@ class BlocsProviders extends StatelessWidget {
       builder: (context, orientation, screenType) {
         return MultiBlocProvider(
           providers: [
-            BlocProvider(create: (context) => CateHomeCubit()),
-            BlocProvider(create: (context) => CateWorkCubit()),
+            BlocProvider(create: (context) => CateHomeEsCubit()),
+            BlocProvider(create: (context) => CateWorkEsCubit()),
+            BlocProvider(create: (context) => CateHomeEnCubit()),
+            BlocProvider(create: (context) => CateWorkEnCubit()),
             BlocProvider(create: (context) => GastosCubits()),
             BlocProvider(create: (context) => GastosHistorialCubits()),
           ],
@@ -42,7 +46,9 @@ class MyApp extends StatelessWidget {
     return FlutterSizer(
       builder: (context, orientation, screenType) {
         return MaterialApp(
-          title: "Mis Presupuestos",
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          title: AppLocalizations.of(context)?.tittle_name,
           debugShowCheckedModeBanner: false,
           theme: AppThemes.slate,
           darkTheme: AppThemes.sage,
