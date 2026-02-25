@@ -1,4 +1,5 @@
-import 'package:bills_control/cubits/constant_cubits.dart';
+import 'package:bills_control/cubits/constant_es_cubits.dart';
+import 'package:bills_control/cubits/cubits_all.dart';
 import 'package:bills_control/cubits/data_cubits_models.dart';
 import 'package:bills_control/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -52,14 +53,19 @@ class CategorySelectionSheet extends StatelessWidget {
           ),
           Expanded(
             child: TabBarView(
-              children: AppLocalizations.of(context)!.texto_hogar == 'Home'
+              children: AppLocalizations.of(context)!.texto_hogar == 'Hogar'
                   ? [
-                      _CategoryList<CateHomeEnCubit>(),
-                      _CategoryList<CateWorkEnCubit>(),
-                    ]
-                  : [
                       _CategoryList<CateHomeEsCubit>(),
                       _CategoryList<CateWorkEsCubit>(),
+                    ]
+                  : AppLocalizations.of(context)!.texto_hogar == 'Casa'
+                  ? [
+                      _CategoryList<CateHomeBrCubit>(),
+                      _CategoryList<CateWorkBrCubit>(),
+                    ]
+                  : [
+                      _CategoryList<CateHomeEnCubit>(),
+                      _CategoryList<CateWorkEnCubit>(),
                     ],
             ),
           ),

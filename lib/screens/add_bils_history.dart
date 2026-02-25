@@ -123,9 +123,11 @@ class GastosHistorialAdd extends StatelessWidget {
                               dateController.text.isEmpty &&
                               amountController.text.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                              SnackBar(
                                 content: Text(
-                                  "Revise los campos que esten vacios o con menos de 4 caracteres",
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.snack_text_caracteres_vacio,
                                 ),
                               ),
                             );

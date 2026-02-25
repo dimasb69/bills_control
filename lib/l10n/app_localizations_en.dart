@@ -106,4 +106,22 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get texto_eliminar_presupuesto_confirmacion =>
       'Are you sure you want to delete this budget?';
+
+  @override
+  String get snack_text_caracteres_minimos =>
+      'The concept must have at least 4 characters';
+
+  @override
+  String get snack_text_monto_minimo => 'The amount must be greater than 0';
+
+  @override
+  String get snack_text_caracteres_vacio =>
+      'Check ther are not empty fields or contains less than 4 characters';
+
+  @override
+  String get snack_text_abierto => 'The file has been opened';
+
+  @override
+  String get snack_text_error =>
+      'Error opening the file, validate has Excel Visor installed';
 }

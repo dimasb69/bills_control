@@ -7,6 +7,7 @@ import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_en.dart';
 import 'app_localizations_es.dart';
+import 'app_localizations_pt.dart';
 
 // ignore_for_file: type=lint
 
@@ -96,6 +97,7 @@ abstract class AppLocalizations {
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
     Locale('es'),
+    Locale('pt'),
   ];
 
   /// Titulo de la app
@@ -289,6 +291,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to delete this budget?'**
   String get texto_eliminar_presupuesto_confirmacion;
+
+  /// texto de snack caracteres minimos
+  ///
+  /// In en, this message translates to:
+  /// **'The concept must have at least 4 characters'**
+  String get snack_text_caracteres_minimos;
+
+  /// texto de snack monto minimo
+  ///
+  /// In en, this message translates to:
+  /// **'The amount must be greater than 0'**
+  String get snack_text_monto_minimo;
+
+  /// texto de snack caracteres minimos
+  ///
+  /// In en, this message translates to:
+  /// **'Check ther are not empty fields or contains less than 4 characters'**
+  String get snack_text_caracteres_vacio;
+
+  /// texto de snack abierto
+  ///
+  /// In en, this message translates to:
+  /// **'The file has been opened'**
+  String get snack_text_abierto;
+
+  /// texto de snack error
+  ///
+  /// In en, this message translates to:
+  /// **'Error opening the file, validate has Excel Visor installed'**
+  String get snack_text_error;
 }
 
 class _AppLocalizationsDelegate
@@ -302,7 +334,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en', 'es'].contains(locale.languageCode);
+      <String>['en', 'es', 'pt'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -315,6 +347,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsEn();
     case 'es':
       return AppLocalizationsEs();
+    case 'pt':
+      return AppLocalizationsPt();
   }
 
   throw FlutterError(

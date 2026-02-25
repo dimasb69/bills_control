@@ -4,11 +4,12 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
-Future<void> convertDataToExcel(int billId, BuildContext context) async {
+Future<void> convertDataToExcel(int billId, BuildContext mainContext) async {
   showDialog(
-    context: context,
-    builder: (context) {
+    context: mainContext,
+    builder: (mainContext) {
       return const Center(child: CircularProgressIndicator());
     },
   );
@@ -20,12 +21,14 @@ Future<void> convertDataToExcel(int billId, BuildContext context) async {
   Sheet sheetObject = excel['Sheet1'];
 
   // Añadir cabecera
-  sheetObject.appendRow([
-    TextCellValue('Fecha'),
-    TextCellValue('Descripción'),
-    TextCellValue('Categoria'),
-    TextCellValue('Importe'),
-  ]);
+  if (mainContext.mounted) {
+    sheetObject.appendRow([
+      TextCellValue(AppLocalizations.of(mainContext)!.etiqueta_fecha),
+      TextCellValue(AppLocalizations.of(mainContext)!.etiueta_descripcion),
+      TextCellValue(AppLocalizations.of(mainContext)!.texto_categoria),
+      TextCellValue(AppLocalizations.of(mainContext)!.etiqueta_monto),
+    ]);
+  }
 
   for (var gastoItem in gastosItems) {
     if (gastoItem.gastoId == billId) {
@@ -53,27 +56,33 @@ Future<void> convertDataToExcel(int billId, BuildContext context) async {
 
   try {
     await OpenFile.open(file.path).then((value) {
-      if (context.mounted) {
-        Navigator.pop(context);
+      if (mainContext.mounted) {
+        Navigator.pop(mainContext);
         if (value.type == ResultType.done) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text("Archivo abierto")));
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
+          ScaffoldMessenger.of(mainContext).showSnackBar(
             SnackBar(
-              content: Text("Error al abrir, Visor de Excel no instalado"),
+              content: Text(
+                AppLocalizations.of(mainContext)!.snack_text_abierto,
+              ),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(mainContext).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(mainContext)!.snack_text_error),
             ),
           );
         }
       }
     });
   } catch (e) {
-    if (context.mounted) {
-      Navigator.pop(context);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Error al abrir el archivo")));
+    if (mainContext.mounted) {
+      Navigator.pop(mainContext);
+      ScaffoldMessenger.of(mainContext).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(mainContext)!.snack_text_error),
+        ),
+      );
     }
   }
 }

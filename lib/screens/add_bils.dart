@@ -98,9 +98,23 @@ class NewControl extends StatelessWidget {
                         onPressed: () async {
                           if (motivoController.text.length < 4) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                              SnackBar(
                                 content: Text(
-                                  "El motivo debe tener al menos 4 caracteres",
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.snack_text_caracteres_minimos,
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+                          if (double.parse(amountController.text) <= 0) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.snack_text_monto_minimo,
                                 ),
                               ),
                             );
