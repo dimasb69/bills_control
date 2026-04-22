@@ -109,13 +109,13 @@ abstract class AppLocalizations {
   /// Mensaje cuando no hay registros
   ///
   /// In en, this message translates to:
-  /// **'No items, press + to add one'**
+  /// **'No accounts or budgets, press + to add one'**
   String get no_items;
 
   /// Mensaje cuando no hay registros en el historial
   ///
   /// In en, this message translates to:
-  /// **'No transactions, press + to add one'**
+  /// **'No expenses, press + to add one'**
   String get no_items_history;
 
   /// No description provided for @toolTip_items.
@@ -139,7 +139,7 @@ abstract class AppLocalizations {
   /// Titulo Agregar nuevo
   ///
   /// In en, this message translates to:
-  /// **'New Bills'**
+  /// **'New Budget'**
   String get tittle_add_new;
 
   /// Etiqueta del TextEdit Motivo
@@ -147,6 +147,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Concept / Reason'**
   String get etiqueta_motivo;
+
+  /// No description provided for @hint_motivo.
+  ///
+  /// In en, this message translates to:
+  /// **'Ex: Vacation, Work trip, Monthly expenses'**
+  String get hint_motivo;
 
   /// Etiqueta del TextEdit Monto
   ///
@@ -321,6 +327,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error opening the file, validate has Excel Visor installed'**
   String get snack_text_error;
+
+  /// No description provided for @alert_no_items_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome!'**
+  String get alert_no_items_title;
+
+  /// No description provided for @alert_no_items_content.
+  ///
+  /// In en, this message translates to:
+  /// **'To get started, press the + button in the top corner to create your first budget or account.'**
+  String get alert_no_items_content;
+
+  /// No description provided for @alert_no_items_history_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first expense!'**
+  String get alert_no_items_history_title;
+
+  /// No description provided for @alert_no_items_history_content.
+  ///
+  /// In en, this message translates to:
+  /// **'Press the + button to record your first expense in this budget.'**
+  String get alert_no_items_history_content;
+
+  /// No description provided for @alert_btn_ok.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get alert_btn_ok;
+
+  /// No description provided for @alert_help_home_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget Guide'**
+  String get alert_help_home_title;
+
+  /// No description provided for @alert_help_home_content.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap on a budget to view its expense history. Use the pencil to edit, the bin to delete, and the + icon to add more funds to the budget.'**
+  String get alert_help_home_content;
+
+  /// No description provided for @alert_help_history_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense Guide'**
+  String get alert_help_history_title;
+
+  /// No description provided for @alert_help_history_content.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the + button above to register a new expense. You can edit or delete existing expenses and export the history to Excel.'**
+  String get alert_help_history_content;
 }
 
 class _AppLocalizationsDelegate

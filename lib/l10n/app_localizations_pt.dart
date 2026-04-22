@@ -12,11 +12,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get tittle_name => 'Meus Orçamentos';
 
   @override
-  String get no_items => 'Sem registros, pressione o botão + para adicionar um';
+  String get no_items =>
+      'Sem contas ou orçamentos, pressione o botão + para adicionar um';
 
   @override
   String get no_items_history =>
-      'Sem transações, pressione o botão + para adicionar uma';
+      'Sem gastos, pressione o botão + para adicionar uma';
 
   @override
   String get toolTip_items =>
@@ -33,6 +34,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get etiqueta_motivo => 'Motivo / Conceito';
+
+  @override
+  String get hint_motivo => 'Ex: Férias, Viagem de trabalho, Gastos do mês';
 
   @override
   String get etiqueta_monto => 'Valor a gerenciar';
@@ -125,4 +129,35 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get snack_text_error =>
       'Erro ao abrir o arquivo, valide que tenha instalado o visor de Excel';
+
+  @override
+  String get alert_no_items_title => 'Bem-vindo!';
+
+  @override
+  String get alert_no_items_content =>
+      'Para começar, pressione o botão + no canto superior para criar seu primeiro orçamento ou conta.';
+
+  @override
+  String get alert_no_items_history_title => 'Adicione seu primer gasto!';
+
+  @override
+  String get alert_no_items_history_content =>
+      'Pressione o botón + para registrar seu primeiro movimento neste orçamento.';
+
+  @override
+  String get alert_btn_ok => 'Entendi';
+
+  @override
+  String get alert_help_home_title => 'Guia de Orçamentos';
+
+  @override
+  String get alert_help_home_content =>
+      'Pressione um orçamento para ver o histórico de gastos. Use o ícone de lápis para editar, a lixeira para excluir e o ícone + para adicionar mais dinheiro ao orçamento.';
+
+  @override
+  String get alert_help_history_title => 'Guia de Movimentos';
+
+  @override
+  String get alert_help_history_content =>
+      'Pressione o botão + acima para registrar um novo gasto. Você pode editar ou excluir gastos existentes e exportar o histórico para o Excel.';
 }

@@ -12,11 +12,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get tittle_name => 'Mis Presupuestos';
 
   @override
-  String get no_items => 'Sin registros, presiona el boton + para agregar uno';
+  String get no_items =>
+      'Sin cuentas o presupuestos, presiona el boton + para agregar uno';
 
   @override
   String get no_items_history =>
-      'Sin transacciones, presiona el boton + para agregar una';
+      'Sin gastos, presiona el boton + para agregar uno';
 
   @override
   String get toolTip_items =>
@@ -33,6 +34,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get etiqueta_motivo => 'Motivo / Concepto';
+
+  @override
+  String get hint_motivo => 'Ej: Vacaciones, Viaje de trabajo, Gastos del mes';
 
   @override
   String get etiqueta_monto => 'Monto a manejar';
@@ -125,4 +129,35 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get snack_text_error =>
       'Error al abrir el archivo, valida que tienes instalado el visor de Excel';
+
+  @override
+  String get alert_no_items_title => '¡Bienvenido!';
+
+  @override
+  String get alert_no_items_content =>
+      'Para comenzar, presiona el botón + en la esquina superior para crear tu primer presupuesto o cuenta.';
+
+  @override
+  String get alert_no_items_history_title => '¡Añade tu primer gasto!';
+
+  @override
+  String get alert_no_items_history_content =>
+      'Presiona el botón + para registrar tu primer movimiento en este presupuesto.';
+
+  @override
+  String get alert_btn_ok => 'Entendido';
+
+  @override
+  String get alert_help_home_title => 'Guía de Presupuestos';
+
+  @override
+  String get alert_help_home_content =>
+      'Presiona sobre un presupuesto para ver su historial de gastos. Usa el icono de lápiz para editar, el bote para eliminar y el icono + para añadir más dinero al presupuesto.';
+
+  @override
+  String get alert_help_history_title => 'Guía de Movimientos';
+
+  @override
+  String get alert_help_history_content =>
+      'Presiona el botón + arriba para registrar un nuevo gasto. Puedes editar o eliminar gastos existentes y exportar el historial a Excel.';
 }

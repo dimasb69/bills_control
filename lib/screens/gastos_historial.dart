@@ -12,11 +12,67 @@ import 'package:flutter_sizer/flutter_sizer.dart';
 List<GastosItem> stateFilter = [];
 int count = 0;
 
-class GastosHistorial extends StatelessWidget {
+class GastosHistorial extends StatefulWidget {
   const GastosHistorial({super.key, required this.id, required this.name});
 
   final int id;
   final String name;
+
+  @override
+  State<GastosHistorial> createState() => _GastosHistorialState();
+}
+
+class _GastosHistorialState extends State<GastosHistorial> {
+  bool _hasShownDialog = false;
+
+  @override
+  void initState() {
+    super.initState();
+    count = 0; // Reset count to ensure data is fetched when entering
+  }
+
+  void _showAppropriateDialog(List<GastosItem> state) {
+    if (_hasShownDialog || !mounted) return;
+    final filtered = state.where((element) => element.gastoId == widget.id).toList();
+    
+    // We only show the dialog once we are sure we have data or filtered is empty
+    // But since getGastosItems is called on every build if count is 0, we can rely on listener
+    _hasShownDialog = true;
+
+    if (filtered.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(AppLocalizations.of(context)!.alert_no_items_history_title),
+            content: Text(AppLocalizations.of(context)!.alert_no_items_history_content),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(AppLocalizations.of(context)!.alert_btn_ok),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(AppLocalizations.of(context)!.alert_help_history_title),
+            content: Text(AppLocalizations.of(context)!.alert_help_history_content),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(AppLocalizations.of(context)!.alert_btn_ok),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,11 +97,11 @@ class GastosHistorial extends StatelessWidget {
           children: [
             BlocBuilder<GastosCubits, List<Gasto>>(
               builder: (context, state) {
-                final gastoC = state.firstWhere((element) => element.id == id);
+                final gastoC = state.firstWhere((element) => element.id == widget.id);
                 return Row(
                   children: [
                     Text(
-                      name.length > 16 ? name.substring(0, 16) : name,
+                      widget.name.length > 16 ? widget.name.substring(0, 16) : widget.name,
                       style: TextStyle(fontSize: 14.dp),
                     ),
                     Text(
@@ -63,6 +119,28 @@ class GastosHistorial extends StatelessWidget {
         ),
         actions: [
           IconButton(
+            icon: const Icon(Icons.help),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text(
+                        AppLocalizations.of(context)!.alert_help_history_title),
+                    content: Text(AppLocalizations.of(context)!
+                        .alert_help_history_content),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(AppLocalizations.of(context)!.alert_btn_ok),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+          IconButton(
             tooltip: AppLocalizations.of(context)!.toolTip_add_gasto,
             icon: const Icon(Icons.add),
             onPressed: () {
@@ -70,7 +148,7 @@ class GastosHistorial extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) {
-                    return GastosHistorialAdd(id: id, name: name);
+                    return GastosHistorialAdd(id: widget.id, name: widget.name);
                   },
                 ),
               );
@@ -81,7 +159,7 @@ class GastosHistorial extends StatelessWidget {
             icon: const Icon(Icons.file_open),
             onPressed: () async {
               if (stateFilter.isNotEmpty) {
-                await convertDataToExcel(id, context);
+                await convertDataToExcel(widget.id, context);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -96,10 +174,14 @@ class GastosHistorial extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: BlocBuilder<GastosHistorialCubits, List<GastosItem>>(
+        child: BlocConsumer<GastosHistorialCubits, List<GastosItem>>(
+          listener: (context, state) {
+            _showAppropriateDialog(state);
+          },
           builder: (context, state) {
+            stateFilter = [];
             for (var data in state) {
-              if (data.gastoId == id) {
+              if (data.gastoId == widget.id) {
                 stateFilter.add(data);
               }
             }
@@ -110,7 +192,7 @@ class GastosHistorial extends StatelessWidget {
                 child: Center(
                   child: Text(
                     AppLocalizations.of(context)!.no_items_history,
-                    style: TextStyle(fontSize: 15),
+                    style: const TextStyle(fontSize: 15),
                   ),
                 ),
               );

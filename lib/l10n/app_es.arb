@@ -1,12 +1,13 @@
 {
     "tittle_name": "Mis Presupuestos",
-    "no_items": "Sin registros, presiona el boton + para agregar uno",
-    "no_items_history": "Sin transacciones, presiona el boton + para agregar una",
+    "no_items": "Sin cuentas o presupuestos, presiona el boton + para agregar uno",
+    "no_items_history": "Sin gastos, presiona el boton + para agregar uno",
     "toolTip_items": "Presiona sobre el presupuesto para ver o editar el historial de gastos",
     "toolTip_add_new": "Agregar nuevo",
     "toolTip_History": "Ver | Editar Historial",
     "tittle_add_new": "Nuevo Presupuesto",
     "etiqueta_motivo": "Motivo / Concepto",
+    "hint_motivo": "Ej: Vacaciones, Viaje de trabajo, Gastos del mes",
     "etiqueta_monto": "Monto a manejar",
     "etiqueta_fecha": "Fecha",
     "etiqueta_guardar": "Guardar",
@@ -35,5 +36,14 @@
     "snack_text_monto_minimo": "El monto debe ser mayor a 0",
     "snack_text_caracteres_vacio": "Revise los campos que esten vacios o con menos de 4 caracteres",
     "snack_text_abierto": "El archivo se ha abierto",
-    "snack_text_error": "Error al abrir el archivo, valida que tienes instalado el visor de Excel"
+    "snack_text_error": "Error al abrir el archivo, valida que tienes instalado el visor de Excel",
+    "alert_no_items_title": "¡Bienvenido!",
+    "alert_no_items_content": "Para comenzar, presiona el botón + en la esquina superior para crear tu primer presupuesto o cuenta.",
+    "alert_no_items_history_title": "¡Añade tu primer gasto!",
+    "alert_no_items_history_content": "Presiona el botón + para registrar tu primer movimiento en este presupuesto.",
+    "alert_btn_ok": "Entendido",
+    "alert_help_home_title": "Guía de Presupuestos",
+    "alert_help_home_content": "Presiona sobre un presupuesto para ver su historial de gastos. Usa el icono de lápiz para editar, el bote para eliminar y el icono + para añadir más dinero al presupuesto.",
+    "alert_help_history_title": "Guía de Movimientos",
+    "alert_help_history_content": "Presiona el botón + arriba para registrar un nuevo gasto. Puedes editar o eliminar gastos existentes y exportar el historial a Excel."
 }

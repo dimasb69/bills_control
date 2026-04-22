@@ -53,6 +53,7 @@ class NewControl extends StatelessWidget {
                   maxLength: 22,
                   decoration: InputDecoration(
                     labelText: AppLocalizations.of(context)!.etiqueta_motivo,
+                    hintText: AppLocalizations.of(context)!.hint_motivo,
                     border: OutlineInputBorder(),
                   ),
                 ),

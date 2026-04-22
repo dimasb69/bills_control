@@ -12,10 +12,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tittle_name => 'My Budget';
 
   @override
-  String get no_items => 'No items, press + to add one';
+  String get no_items => 'No accounts or budgets, press + to add one';
 
   @override
-  String get no_items_history => 'No transactions, press + to add one';
+  String get no_items_history => 'No expenses, press + to add one';
 
   @override
   String get toolTip_items =>
@@ -28,10 +28,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tootTip_history => 'View | Edit History';
 
   @override
-  String get tittle_add_new => 'New Bills';
+  String get tittle_add_new => 'New Budget';
 
   @override
   String get etiqueta_motivo => 'Concept / Reason';
+
+  @override
+  String get hint_motivo => 'Ex: Vacation, Work trip, Monthly expenses';
 
   @override
   String get etiqueta_monto => 'Amount to manage';
@@ -124,4 +127,35 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get snack_text_error =>
       'Error opening the file, validate has Excel Visor installed';
+
+  @override
+  String get alert_no_items_title => 'Welcome!';
+
+  @override
+  String get alert_no_items_content =>
+      'To get started, press the + button in the top corner to create your first budget or account.';
+
+  @override
+  String get alert_no_items_history_title => 'Add your first expense!';
+
+  @override
+  String get alert_no_items_history_content =>
+      'Press the + button to record your first expense in this budget.';
+
+  @override
+  String get alert_btn_ok => 'Got it';
+
+  @override
+  String get alert_help_home_title => 'Budget Guide';
+
+  @override
+  String get alert_help_home_content =>
+      'Tap on a budget to view its expense history. Use the pencil to edit, the bin to delete, and the + icon to add more funds to the budget.';
+
+  @override
+  String get alert_help_history_title => 'Expense Guide';
+
+  @override
+  String get alert_help_history_content =>
+      'Tap the + button above to register a new expense. You can edit or delete existing expenses and export the history to Excel.';
 }

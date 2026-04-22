@@ -10,8 +10,54 @@ import 'package:flutter_sizer/flutter_sizer.dart';
 
 import '../l10n/app_localizations.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  bool _hasShownDialog = false;
+
+  void _showAppropriateDialog(List<Gasto> state) {
+    if (_hasShownDialog || !mounted) return;
+    _hasShownDialog = true;
+
+    if (state.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(AppLocalizations.of(context)!.alert_no_items_title),
+            content: Text(AppLocalizations.of(context)!.alert_no_items_content),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(AppLocalizations.of(context)!.alert_btn_ok),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(AppLocalizations.of(context)!.alert_help_home_title),
+            content: Text(AppLocalizations.of(context)!.alert_help_home_content),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(AppLocalizations.of(context)!.alert_btn_ok),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +73,16 @@ class Home extends StatelessWidget {
                 context: context,
                 builder: (context) {
                   return AlertDialog(
+                    title: Text(
+                        AppLocalizations.of(context)!.alert_help_home_title),
                     content: Text(
-                      gCubit.state.isEmpty
-                          ? AppLocalizations.of(context)!.no_items
-                          : AppLocalizations.of(context)!.toolTip_items,
-                    ),
+                        AppLocalizations.of(context)!.alert_help_home_content),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(AppLocalizations.of(context)!.alert_btn_ok),
+                      ),
+                    ],
                   );
                 },
               );
@@ -50,7 +101,10 @@ class Home extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: BlocBuilder<GastosCubits, List<Gasto>>(
+        child: BlocConsumer<GastosCubits, List<Gasto>>(
+          listener: (context, state) {
+            _showAppropriateDialog(state);
+          },
           builder: (context, state) {
             if (state.isEmpty) {
               return Container(
@@ -58,11 +112,11 @@ class Home extends StatelessWidget {
                 height: 100.h,
                 child: Center(
                   child: Padding(
-                    padding: EdgeInsetsGeometry.only(left: 10, right: 10),
+                    padding: const EdgeInsets.only(left: 10, right: 10),
                     child: Text(
                       AppLocalizations.of(context)!.no_items,
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 15),
+                      style: const TextStyle(fontSize: 15),
                     ),
                   ),
                 ),

@@ -3,11 +3,11 @@
     "@tittle_name": {
         "description": "Titulo de la app"
         },
-    "no_items": "No items, press + to add one",
+    "no_items": "No accounts or budgets, press + to add one",
     "@no_items": {
         "description": "Mensaje cuando no hay registros"
         },
-    "no_items_history": "No transactions, press + to add one",
+    "no_items_history": "No expenses, press + to add one",
     "@no_items_history": {
         "description": "Mensaje cuando no hay registros en el historial"
         },
@@ -23,11 +23,12 @@
     "@tootTip_history":{
                 "description": "tool tip del boton history"
         },
-    "tittle_add_new": "New Bills",
+    "tittle_add_new": "New Budget",
     "@tittle_add_new": {
             "description": "Titulo Agregar nuevo"
         },
     "etiqueta_motivo": "Concept / Reason",
+    "hint_motivo": "Ex: Vacation, Work trip, Monthly expenses",
     "@etiqueta_motivo":{
         "description": "Etiqueta del TextEdit Motivo"
     },
@@ -135,5 +136,14 @@
     "snack_text_error": "Error opening the file, validate has Excel Visor installed",
     "@snack_text_error":{
         "description": "texto de snack error"
-    }
+    },
+    "alert_no_items_title": "Welcome!",
+    "alert_no_items_content": "To get started, press the + button in the top corner to create your first budget or account.",
+    "alert_no_items_history_title": "Add your first expense!",
+    "alert_no_items_history_content": "Press the + button to record your first expense in this budget.",
+    "alert_btn_ok": "Got it",
+    "alert_help_home_title": "Budget Guide",
+    "alert_help_home_content": "Tap on a budget to view its expense history. Use the pencil to edit, the bin to delete, and the + icon to add more funds to the budget.",
+    "alert_help_history_title": "Expense Guide",
+    "alert_help_history_content": "Tap the + button above to register a new expense. You can edit or delete existing expenses and export the history to Excel."
 }
