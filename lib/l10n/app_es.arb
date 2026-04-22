@@ -45,5 +45,10 @@
     "alert_help_home_title": "Guía de Presupuestos",
     "alert_help_home_content": "Presiona sobre un presupuesto para ver su historial de gastos. Usa el icono de lápiz para editar, el bote para eliminar y el icono + para añadir más dinero al presupuesto.",
     "alert_help_history_title": "Guía de Movimientos",
-    "alert_help_history_content": "Presiona el botón + arriba para registrar un nuevo gasto. Puedes editar o eliminar gastos existentes y exportar el historial a Excel."
+    "alert_help_history_content": "Presiona el botón + arriba para registrar un nuevo gasto. Puedes editar o eliminar gastos existentes y exportar el historial a Excel.",
+    "texto_personalizado": "Personalizado",
+    "tooltip_manage_categories": "Gestionar categorías",
+    "label_new_category": "Nueva categoría",
+    "tooltip_auto_help": "Ayuda automática",
+    "category_notice": "En la pestaña 'Personalizado' puedes crear y gestionar tus propias categorías."
 }

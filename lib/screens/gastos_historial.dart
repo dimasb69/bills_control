@@ -9,11 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 
-List<GastosItem> stateFilter = [];
-int count = 0;
-
 class GastosHistorial extends StatefulWidget {
-  const GastosHistorial({super.key, required this.id, required this.name});
+  const GastosHistorial({Key? key, required this.id, required this.name})
+      : super(key: key);
 
   final int id;
   final String name;
@@ -24,19 +22,27 @@ class GastosHistorial extends StatefulWidget {
 
 class _GastosHistorialState extends State<GastosHistorial> {
   bool _hasShownDialog = false;
+  List<GastosItem> stateFilter = [];
 
   @override
   void initState() {
     super.initState();
-    count = 0; // Reset count to ensure data is fetched when entering
+    // Limpiamos y cargamos los datos al iniciar la pantalla
+    final ghCubit = context.read<GastosHistorialCubits>();
+    ghCubit.clearGastosItems();
+    ghCubit.getGastosItems();
   }
 
   void _showAppropriateDialog(List<GastosItem> state) {
     if (_hasShownDialog || !mounted) return;
-    final filtered = state.where((element) => element.gastoId == widget.id).toList();
-    
+
+    final showAutoHelp = context.read<SettingsCubit>().state;
+    if (showAutoHelp == null || !showAutoHelp) return;
+
+    final filtered =
+        state.where((element) => element.gastoId == widget.id).toList();
+
     // We only show the dialog once we are sure we have data or filtered is empty
-    // But since getGastosItems is called on every build if count is 0, we can rely on listener
     _hasShownDialog = true;
 
     if (filtered.isEmpty) {
@@ -44,8 +50,10 @@ class _GastosHistorialState extends State<GastosHistorial> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text(AppLocalizations.of(context)!.alert_no_items_history_title),
-            content: Text(AppLocalizations.of(context)!.alert_no_items_history_content),
+            title:
+                Text(AppLocalizations.of(context)!.alert_no_items_history_title),
+            content: Text(
+                AppLocalizations.of(context)!.alert_no_items_history_content),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -61,7 +69,8 @@ class _GastosHistorialState extends State<GastosHistorial> {
         builder: (context) {
           return AlertDialog(
             title: Text(AppLocalizations.of(context)!.alert_help_history_title),
-            content: Text(AppLocalizations.of(context)!.alert_help_history_content),
+            content:
+                Text(AppLocalizations.of(context)!.alert_help_history_content),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -76,15 +85,6 @@ class _GastosHistorialState extends State<GastosHistorial> {
 
   @override
   Widget build(BuildContext context) {
-    stateFilter = [];
-    if (count == 0) {
-      if (context.read<GastosHistorialCubits>().state.isNotEmpty) {
-        context.read<GastosHistorialCubits>().clearGastosItems();
-      } else {
-        context.read<GastosHistorialCubits>().getGastosItems();
-      }
-      count++;
-    }
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(

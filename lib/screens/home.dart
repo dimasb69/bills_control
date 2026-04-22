@@ -11,7 +11,7 @@ import 'package:flutter_sizer/flutter_sizer.dart';
 import '../l10n/app_localizations.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  const Home({Key? key}) : super(key: key);
 
   @override
   State<Home> createState() => _HomeState();
@@ -22,6 +22,10 @@ class _HomeState extends State<Home> {
 
   void _showAppropriateDialog(List<Gasto> state) {
     if (_hasShownDialog || !mounted) return;
+
+    final showAutoHelp = context.read<SettingsCubit>().state;
+    if (showAutoHelp == null || !showAutoHelp) return;
+
     _hasShownDialog = true;
 
     if (state.isEmpty) {
@@ -66,6 +70,23 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.tittle_name),
         actions: [
+          BlocBuilder<SettingsCubit, bool?>(
+            builder: (context, showAutoHelp) {
+              return Tooltip(
+                message: AppLocalizations.of(context)!.tooltip_auto_help,
+                child: Transform.scale(
+                  scale: 0.7,
+                  child: Switch(
+                    activeColor: Colors.green,
+                    value: showAutoHelp ?? true,
+                    onChanged: (value) {
+                      context.read<SettingsCubit>().toggleAutoHelp(value);
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.help),
             onPressed: () {

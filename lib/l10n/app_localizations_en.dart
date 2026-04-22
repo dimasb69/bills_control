@@ -158,4 +158,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get alert_help_history_content =>
       'Tap the + button above to register a new expense. You can edit or delete existing expenses and export the history to Excel.';
+
+  @override
+  String get texto_personalizado => 'Custom';
+
+  @override
+  String get tooltip_manage_categories => 'Manage categories';
+
+  @override
+  String get label_new_category => 'New category';
+
+  @override
+  String get tooltip_auto_help => 'Automatic help';
+
+  @override
+  String get category_notice =>
+      'In the \'Custom\' tab you can create and manage your own categories.';
 }

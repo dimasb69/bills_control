@@ -40,6 +40,41 @@ Future deleteGasto(int id) async {
   )..where((t) => t.id.equals(id))).go();
 }
 
+//Tabla Categorias
+Future<List<Categoria>> readAllCategorias() async {
+  return await gastosDatabase.select(gastosDatabase.categorias).get();
+}
+
+Future<void> writeCategoria(String name) async {
+  await gastosDatabase.into(gastosDatabase.categorias).insert(
+        CategoriasCompanion.insert(name: name),
+      );
+}
+
+Future<void> deleteCategoria(int id) async {
+  await (gastosDatabase.delete(gastosDatabase.categorias)
+        ..where((t) => t.id.equals(id)))
+      .go();
+}
+
+//Tabla Settings
+Future<AppSetting?> readSettings() async {
+  return await gastosDatabase.select(gastosDatabase.appSettings).getSingleOrNull();
+}
+
+Future<void> updateSettings(bool showAutoHelp) async {
+  final settings = await readSettings();
+  if (settings == null) {
+    await gastosDatabase.into(gastosDatabase.appSettings).insert(
+          AppSettingsCompanion.insert(showAutoHelp: Value(showAutoHelp)),
+        );
+  } else {
+    await (gastosDatabase.update(gastosDatabase.appSettings)
+          ..where((t) => t.id.equals(settings.id)))
+        .write(AppSettingsCompanion(showAutoHelp: Value(showAutoHelp)));
+  }
+}
+
 Future updateGasto(int id, String motivo, double newAmount) async {
   return (gastosDatabase.update(gastosDatabase.gastos)
         ..where((t) => t.id.equals(id)))

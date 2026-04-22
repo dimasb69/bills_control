@@ -21,13 +21,40 @@ class GastosItems extends Table {
   TextColumn get type => text()();
 }
 
-@DriftDatabase(tables: [Gastos, GastosItems])
+class Categorias extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text().withLength(min: 2, max: 32)();
+}
+
+class AppSettings extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  BoolColumn get showAutoHelp => boolean().withDefault(const Constant(true))();
+}
+
+@DriftDatabase(tables: [Gastos, GastosItems, Categorias, AppSettings])
 class GastosDatabase extends _$GastosDatabase {
   GastosDatabase([QueryExecutor? executor])
-    : super(executor ?? _openConnection());
+      : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 3;
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      onCreate: (m) async {
+        await m.createAll();
+      },
+      onUpgrade: (m, from, to) async {
+        if (from < 2) {
+          await m.createTable(categorias);
+        }
+        if (from < 3) {
+          await m.createTable(appSettings);
+        }
+      },
+    );
+  }
 
   static QueryExecutor _openConnection() {
     return driftDatabase(

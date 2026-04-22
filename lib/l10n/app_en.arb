@@ -145,5 +145,10 @@
     "alert_help_home_title": "Budget Guide",
     "alert_help_home_content": "Tap on a budget to view its expense history. Use the pencil to edit, the bin to delete, and the + icon to add more funds to the budget.",
     "alert_help_history_title": "Expense Guide",
-    "alert_help_history_content": "Tap the + button above to register a new expense. You can edit or delete existing expenses and export the history to Excel."
+    "alert_help_history_content": "Tap the + button above to register a new expense. You can edit or delete existing expenses and export the history to Excel.",
+    "texto_personalizado": "Custom",
+    "tooltip_manage_categories": "Manage categories",
+    "label_new_category": "New category",
+    "tooltip_auto_help": "Automatic help",
+    "category_notice": "In the 'Custom' tab you can create and manage your own categories."
 }

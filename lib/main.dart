@@ -31,6 +31,8 @@ class BlocsProviders extends StatelessWidget {
             BlocProvider(create: (context) => CateWorkBrCubit()),
             BlocProvider(create: (context) => GastosCubits()),
             BlocProvider(create: (context) => GastosHistorialCubits()),
+            BlocProvider(create: (context) => CategoriasCustomCubit()),
+            BlocProvider(create: (context) => SettingsCubit()),
           ],
           child: const MyApp(),
         );
@@ -45,6 +47,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.read<GastosCubits>().getGastos();
+    context.read<CategoriasCustomCubit>().getCategorias();
+    context.read<SettingsCubit>().getSettings();
     return FlutterSizer(
       builder: (context, orientation, screenType) {
         return MaterialApp(

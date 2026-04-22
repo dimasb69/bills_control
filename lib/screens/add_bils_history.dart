@@ -13,7 +13,6 @@ import 'package:intl/intl.dart';
 // Define el formato exacto que tiene tu String
 DateFormat format = DateFormat("yyyy/M/d");
 
-List<Gasto> gastosList = [];
 TextEditingController descriptionController = TextEditingController();
 TextEditingController amountController = TextEditingController();
 TextEditingController categoryController = TextEditingController();
@@ -154,7 +153,6 @@ class GastosHistorialAdd extends StatelessWidget {
                             categoryController.clear();
                             amountController.clear();
                             if (context.mounted) {
-                              stateFilter = [];
                               context
                                   .read<GastosHistorialCubits>()
                                   .getGastosItems();

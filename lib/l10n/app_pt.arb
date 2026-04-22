@@ -45,5 +45,10 @@
     "alert_help_home_title": "Guia de Orçamentos",
     "alert_help_home_content": "Pressione um orçamento para ver o histórico de gastos. Use o ícone de lápis para editar, a lixeira para excluir e o ícone + para adicionar mais dinheiro ao orçamento.",
     "alert_help_history_title": "Guia de Movimentos",
-    "alert_help_history_content": "Pressione o botão + acima para registrar um novo gasto. Você pode editar ou excluir gastos existentes e exportar o histórico para o Excel."
+    "alert_help_history_content": "Pressione o botão + acima para registrar um novo gasto. Você pode editar ou excluir gastos existentes e exportar o histórico para o Excel.",
+    "texto_personalizado": "Personalizado",
+    "tooltip_manage_categories": "Gerenciar categorias",
+    "label_new_category": "Nova categoria",
+    "tooltip_auto_help": "Ajuda automática",
+    "category_notice": "Na aba 'Personalizado' você pode criar e gerenciar suas próprias categorias."
 }

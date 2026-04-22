@@ -160,4 +160,20 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get alert_help_history_content =>
       'Pressione o botão + acima para registrar um novo gasto. Você pode editar ou excluir gastos existentes e exportar o histórico para o Excel.';
+
+  @override
+  String get texto_personalizado => 'Personalizado';
+
+  @override
+  String get tooltip_manage_categories => 'Gerenciar categorias';
+
+  @override
+  String get label_new_category => 'Nova categoria';
+
+  @override
+  String get tooltip_auto_help => 'Ajuda automática';
+
+  @override
+  String get category_notice =>
+      'Na aba \'Personalizado\' você pode criar e gerenciar suas próprias categorias.';
 }

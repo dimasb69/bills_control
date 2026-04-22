@@ -381,6 +381,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tap the + button above to register a new expense. You can edit or delete existing expenses and export the history to Excel.'**
   String get alert_help_history_content;
+
+  /// No description provided for @texto_personalizado.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get texto_personalizado;
+
+  /// No description provided for @tooltip_manage_categories.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage categories'**
+  String get tooltip_manage_categories;
+
+  /// No description provided for @label_new_category.
+  ///
+  /// In en, this message translates to:
+  /// **'New category'**
+  String get label_new_category;
+
+  /// No description provided for @tooltip_auto_help.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic help'**
+  String get tooltip_auto_help;
+
+  /// No description provided for @category_notice.
+  ///
+  /// In en, this message translates to:
+  /// **'In the \'Custom\' tab you can create and manage your own categories.'**
+  String get category_notice;
 }
 
 class _AppLocalizationsDelegate
