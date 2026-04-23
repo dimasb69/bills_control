@@ -6,8 +6,12 @@ class CategoriasCustomCubit extends Cubit<List<Categoria>> {
   CategoriasCustomCubit() : super([]);
 
   Future<void> getCategorias() async {
-    final categorias = await readAllCategorias();
-    emit(categorias);
+    try {
+      final categorias = await readAllCategorias();
+      emit(categorias);
+    } catch (e) {
+      emit([]);
+    }
   }
 
   Future<void> addCategoria(String name) async {

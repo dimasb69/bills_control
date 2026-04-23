@@ -26,18 +26,12 @@ Future<List<Gasto>> readGastoById(int id) async {
   return gasto;
 }
 
-Future deleteGasto(int id) async {
-  final gastoItems = await (gastosDatabase.select(
-    gastosDatabase.gastosItems,
-  )..where((t) => t.gastoId.equals(id))).get();
-
-  for (var gastoItem in gastoItems) {
-    await deleteGastoItem(gastoItem.id);
-  }
-
-  return (gastosDatabase.delete(
-    gastosDatabase.gastos,
-  )..where((t) => t.id.equals(id))).go();
+Future<void> deleteGasto(int id) async {
+  await gastosDatabase.transaction(() async {
+    await (gastosDatabase.delete(gastosDatabase.gastos)
+          ..where((t) => t.id.equals(id)))
+        .go();
+  });
 }
 
 //Tabla Categorias

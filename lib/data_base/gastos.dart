@@ -13,7 +13,8 @@ class Gastos extends Table {
 
 class GastosItems extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get gastoId => integer().references(Gastos, #id)();
+  IntColumn get gastoId =>
+      integer().references(Gastos, #id, onDelete: KeyAction.cascade)();
   TextColumn get description => text().withLength(min: 4, max: 32)();
   DateTimeColumn get date => dateTime()();
   RealColumn get amount => real()();
@@ -37,7 +38,7 @@ class GastosDatabase extends _$GastosDatabase {
       : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration {
@@ -52,6 +53,15 @@ class GastosDatabase extends _$GastosDatabase {
         if (from < 3) {
           await m.createTable(appSettings);
         }
+        if (from < 4) {
+          // In SQLite, to change a Foreign Key we must recreate the table.
+          // This will apply the new KeyAction.cascade constraint.
+          await m.deleteTable('gastos_items');
+          await m.createTable(gastosItems);
+        }
+      },
+      beforeOpen: (details) async {
+        await customStatement('PRAGMA foreign_keys = ON');
       },
     );
   }

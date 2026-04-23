@@ -122,11 +122,23 @@ class _HomeState extends State<Home> {
         ],
       ),
       body: SafeArea(
-        child: BlocConsumer<GastosCubits, List<Gasto>>(
-          listener: (context, state) {
-            _showAppropriateDialog(state);
-          },
-          builder: (context, state) {
+        child: MultiBlocListener(
+          listeners: [
+            BlocListener<GastosCubits, List<Gasto>>(
+              listener: (context, state) {
+                _showAppropriateDialog(state);
+              },
+            ),
+            BlocListener<SettingsCubit, bool?>(
+              listener: (context, showAutoHelp) {
+                if (showAutoHelp != null) {
+                  _showAppropriateDialog(context.read<GastosCubits>().state);
+                }
+              },
+            ),
+          ],
+          child: BlocBuilder<GastosCubits, List<Gasto>>(
+            builder: (context, state) {
             if (state.isEmpty) {
               return Container(
                 alignment: Alignment.center,
@@ -248,6 +260,7 @@ class _HomeState extends State<Home> {
               );
             }
           },
+        ),
         ),
       ),
       bottomNavigationBar: bottomDevName(),

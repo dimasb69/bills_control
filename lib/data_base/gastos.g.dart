@@ -326,7 +326,7 @@ class $GastosItemsTable extends GastosItems
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES gastos (id)',
+      'REFERENCES gastos (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _descriptionMeta = const VerificationMeta(
@@ -1163,6 +1163,16 @@ abstract class _$GastosDatabase extends GeneratedDatabase {
     categorias,
     appSettings,
   ];
+  @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'gastos',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('gastos_items', kind: UpdateKind.delete)],
+    ),
+  ]);
 }
 
 typedef $$GastosTableCreateCompanionBuilder =

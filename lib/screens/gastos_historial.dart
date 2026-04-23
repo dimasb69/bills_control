@@ -174,11 +174,24 @@ class _GastosHistorialState extends State<GastosHistorial> {
         ],
       ),
       body: SafeArea(
-        child: BlocConsumer<GastosHistorialCubits, List<GastosItem>>(
-          listener: (context, state) {
-            _showAppropriateDialog(state);
-          },
-          builder: (context, state) {
+        child: MultiBlocListener(
+          listeners: [
+            BlocListener<GastosHistorialCubits, List<GastosItem>>(
+              listener: (context, state) {
+                _showAppropriateDialog(state);
+              },
+            ),
+            BlocListener<SettingsCubit, bool?>(
+              listener: (context, showAutoHelp) {
+                if (showAutoHelp != null) {
+                  _showAppropriateDialog(
+                      context.read<GastosHistorialCubits>().state);
+                }
+              },
+            ),
+          ],
+          child: BlocBuilder<GastosHistorialCubits, List<GastosItem>>(
+            builder: (context, state) {
             stateFilter = [];
             for (var data in state) {
               if (data.gastoId == widget.id) {
@@ -295,6 +308,7 @@ class _GastosHistorialState extends State<GastosHistorial> {
               );
             }
           },
+        ),
         ),
       ),
       bottomNavigationBar: bottomDevName(),
