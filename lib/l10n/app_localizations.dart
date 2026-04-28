@@ -417,6 +417,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'In the \'Custom\' tab you can create and manage your own categories.'**
   String get category_notice;
+
+  /// No description provided for @cerrar_anio.
+  ///
+  /// In en, this message translates to:
+  /// **'Close Year'**
+  String get cerrar_anio;
+
+  /// No description provided for @cerrar_mes.
+  ///
+  /// In en, this message translates to:
+  /// **'Close Month'**
+  String get cerrar_mes;
+
+  /// No description provided for @confirm_cerrar_anio.
+  ///
+  /// In en, this message translates to:
+  /// **'Close year {year}? Current expenses will be archived and the budget will reset for the next year.'**
+  String confirm_cerrar_anio(String year);
+
+  /// No description provided for @confirm_cerrar_mes.
+  ///
+  /// In en, this message translates to:
+  /// **'Close period \'{name}\'? Current expenses will be archived and the balance will reset.'**
+  String confirm_cerrar_mes(String name);
+
+  /// No description provided for @periodos_anteriores.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous Periods'**
+  String get periodos_anteriores;
+
+  /// No description provided for @no_periodos_anteriores.
+  ///
+  /// In en, this message translates to:
+  /// **'No archived periods'**
+  String get no_periodos_anteriores;
+
+  /// No description provided for @eliminar_periodo_titulo.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Period'**
+  String get eliminar_periodo_titulo;
+
+  /// No description provided for @eliminar_periodo_advertencia.
+  ///
+  /// In en, this message translates to:
+  /// **'⚠️ Once deleted, there is no way to recover these records.\n\nIt is recommended to export first before deleting.'**
+  String get eliminar_periodo_advertencia;
+
+  /// No description provided for @btn_exportar_primero.
+  ///
+  /// In en, this message translates to:
+  /// **'Export First'**
+  String get btn_exportar_primero;
+
+  /// No description provided for @btn_eliminar_de_todas_formas.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Anyway'**
+  String get btn_eliminar_de_todas_formas;
+
+  /// No description provided for @total_gastado_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Total spent'**
+  String get total_gastado_label;
+
+  /// No description provided for @visor_periodo_titulo.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get visor_periodo_titulo;
 }
 
 class _AppLocalizationsDelegate

@@ -200,14 +200,16 @@ Future<void> writeHistoryCerrado(
   int gastoId,
   String periodLabel,
   String jsonPath,
-  double totalSpent,
-) async {
+  double totalSpent, {
+  String periodType = 'monthly',
+}) async {
   await gastosDatabase.into(gastosDatabase.gastosHistorialCerrado).insert(
     GastosHistorialCerradoCompanion.insert(
       gastoId: gastoId,
       periodLabel: periodLabel,
       jsonPath: jsonPath,
       totalSpent: totalSpent,
+      periodType: Value(periodType),
     ),
   );
 }
@@ -223,5 +225,26 @@ Future<void> resetGastoPeriod(int id, double initialAmount, DateTime newDate) as
   // Delete current items from DB for this budget (as they are now in JSON)
   await (gastosDatabase.delete(gastosDatabase.gastosItems)
     ..where((t) => t.gastoId.equals(id)))
+  .go();
+}
+
+Future<void> deleteHistoryCerrado(int id) async {
+  // First read the entry to get the JSON path
+  final entries = await (gastosDatabase.select(gastosDatabase.gastosHistorialCerrado)
+    ..where((t) => t.id.equals(id))).get();
+
+  for (var entry in entries) {
+    try {
+      final file = File(entry.jsonPath);
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (e) {
+      // Ignore file errors
+    }
+  }
+
+  await (gastosDatabase.delete(gastosDatabase.gastosHistorialCerrado)
+    ..where((t) => t.id.equals(id)))
   .go();
 }

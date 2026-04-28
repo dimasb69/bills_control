@@ -32,6 +32,8 @@ class GastosHistorialCerrado extends Table {
   TextColumn get periodLabel => text()();
   TextColumn get jsonPath => text()();
   RealColumn get totalSpent => real()();
+  // 'monthly' o 'annual'
+  TextColumn get periodType => text().withDefault(const Constant('monthly'))();
 }
 
 class Categorias extends Table {
@@ -50,7 +52,7 @@ class GastosDatabase extends _$GastosDatabase {
       : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration {
@@ -78,6 +80,10 @@ class GastosDatabase extends _$GastosDatabase {
           await m.addColumn(gastos, gastos.lastResetDate);
           // New table
           await m.createTable(gastosHistorialCerrado);
+        }
+        if (from < 6) {
+          // Add periodType column to GastosHistorialCerrado (default 'monthly')
+          await m.addColumn(gastosHistorialCerrado, gastosHistorialCerrado.periodType);
         }
       },
       beforeOpen: (details) async {

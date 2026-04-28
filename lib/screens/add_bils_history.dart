@@ -1,8 +1,6 @@
 import 'package:bills_control/cubits/cubits_all.dart';
-import 'package:bills_control/data_base/gastos.dart';
 import 'package:bills_control/data_base/gastos_crud.dart';
 import 'package:bills_control/l10n/app_localizations.dart';
-import 'package:bills_control/screens/gastos_historial.dart';
 import 'package:bills_control/widgets/dev_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,16 +24,20 @@ class GastosHistorialAdd extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final budget = context.read<GastosCubits>().state.firstWhere((e) => e.id == id);
+    final budget = context.read<GastosCubits>().state.firstWhere(
+      (e) => e.id == id,
+    );
     DateTime defaultDate = DateTime.now();
     bool isFuturePeriod = false;
 
-    if (budget.lastResetDate != null && budget.lastResetDate!.isAfter(defaultDate)) {
+    if (budget.lastResetDate != null &&
+        budget.lastResetDate!.isAfter(defaultDate)) {
       defaultDate = budget.lastResetDate!;
       isFuturePeriod = true;
     }
 
-    dateController.text = '${defaultDate.year}/${defaultDate.month}/${defaultDate.day}';
+    dateController.text =
+        '${defaultDate.year}/${defaultDate.month}/${defaultDate.day}';
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(
@@ -80,7 +82,10 @@ class GastosHistorialAdd extends StatelessWidget {
                         Expanded(
                           child: Text(
                             "Este periodo ya fue cerrado. El gasto se registrará automáticamente para el próximo mes (${defaultDate.day}/${defaultDate.month}/${defaultDate.year}).",
-                            style: TextStyle(fontSize: 12.dp, color: Colors.orangeAccent),
+                            style: TextStyle(
+                              fontSize: 12.dp,
+                              color: Colors.orangeAccent,
+                            ),
                           ),
                         ),
                       ],

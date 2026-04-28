@@ -179,4 +179,45 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get category_notice =>
       'Na aba \'Personalizado\' você pode criar e gerenciar suas próprias categorias.';
+
+  @override
+  String get cerrar_anio => 'Fechar Ano';
+
+  @override
+  String get cerrar_mes => 'Fechar Mês';
+
+  @override
+  String confirm_cerrar_anio(String year) {
+    return 'Fechar o ano $year? Os gastos atuais serão arquivados e o orçamento será reiniciado para o próximo ano.';
+  }
+
+  @override
+  String confirm_cerrar_mes(String name) {
+    return 'Fechar o período \'$name\'? Os gastos atuais serão arquivados e o saldo será reiniciado.';
+  }
+
+  @override
+  String get periodos_anteriores => 'Períodos Anteriores';
+
+  @override
+  String get no_periodos_anteriores => 'Sem períodos arquivados';
+
+  @override
+  String get eliminar_periodo_titulo => 'Excluir Período';
+
+  @override
+  String get eliminar_periodo_advertencia =>
+      '⚠️ Uma vez excluído, não há como recuperar esses movimentos.\n\nRecomenda-se exportar primeiro antes de excluir.';
+
+  @override
+  String get btn_exportar_primero => 'Exportar Primeiro';
+
+  @override
+  String get btn_eliminar_de_todas_formas => 'Excluir mesmo assim';
+
+  @override
+  String get total_gastado_label => 'Total gasto';
+
+  @override
+  String get visor_periodo_titulo => 'Período';
 }

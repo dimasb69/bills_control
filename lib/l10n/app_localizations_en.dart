@@ -177,4 +177,45 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get category_notice =>
       'In the \'Custom\' tab you can create and manage your own categories.';
+
+  @override
+  String get cerrar_anio => 'Close Year';
+
+  @override
+  String get cerrar_mes => 'Close Month';
+
+  @override
+  String confirm_cerrar_anio(String year) {
+    return 'Close year $year? Current expenses will be archived and the budget will reset for the next year.';
+  }
+
+  @override
+  String confirm_cerrar_mes(String name) {
+    return 'Close period \'$name\'? Current expenses will be archived and the balance will reset.';
+  }
+
+  @override
+  String get periodos_anteriores => 'Previous Periods';
+
+  @override
+  String get no_periodos_anteriores => 'No archived periods';
+
+  @override
+  String get eliminar_periodo_titulo => 'Delete Period';
+
+  @override
+  String get eliminar_periodo_advertencia =>
+      '⚠️ Once deleted, there is no way to recover these records.\n\nIt is recommended to export first before deleting.';
+
+  @override
+  String get btn_exportar_primero => 'Export First';
+
+  @override
+  String get btn_eliminar_de_todas_formas => 'Delete Anyway';
+
+  @override
+  String get total_gastado_label => 'Total spent';
+
+  @override
+  String get visor_periodo_titulo => 'Period';
 }

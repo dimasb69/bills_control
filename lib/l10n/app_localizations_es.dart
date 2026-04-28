@@ -179,4 +179,45 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get category_notice =>
       'En la pestaña \'Personalizado\' puedes crear y gestionar tus propias categorías.';
+
+  @override
+  String get cerrar_anio => 'Cerrar Año';
+
+  @override
+  String get cerrar_mes => 'Cerrar Mes';
+
+  @override
+  String confirm_cerrar_anio(String year) {
+    return '¿Cerrar el año $year? Los gastos actuales se archivarán y el presupuesto se reiniciará para el siguiente año.';
+  }
+
+  @override
+  String confirm_cerrar_mes(String name) {
+    return '¿Cerrar el periodo de \'$name\'? Los gastos actuales se archivarán y el saldo se reiniciará.';
+  }
+
+  @override
+  String get periodos_anteriores => 'Periodos Anteriores';
+
+  @override
+  String get no_periodos_anteriores => 'Sin periodos archivados';
+
+  @override
+  String get eliminar_periodo_titulo => 'Eliminar Periodo';
+
+  @override
+  String get eliminar_periodo_advertencia =>
+      '⚠️ Una vez eliminado, no hay forma de recuperar estos movimientos.\n\nSe recomienda exportar primero antes de eliminar.';
+
+  @override
+  String get btn_exportar_primero => 'Exportar Primero';
+
+  @override
+  String get btn_eliminar_de_todas_formas => 'Eliminar de todas formas';
+
+  @override
+  String get total_gastado_label => 'Total gastado';
+
+  @override
+  String get visor_periodo_titulo => 'Periodo';
 }

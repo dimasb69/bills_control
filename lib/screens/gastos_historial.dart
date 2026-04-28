@@ -1,8 +1,10 @@
 import 'package:bills_control/cubits/cubits_all.dart';
 import 'package:bills_control/data_base/gastos.dart';
+import 'package:bills_control/data_base/gastos_crud.dart' hide deleteGastoItem;
 import 'package:bills_control/excell/convert_data_to_excel.dart';
 import 'package:bills_control/l10n/app_localizations.dart';
 import 'package:bills_control/screens/add_bils_history.dart';
+import 'package:bills_control/screens/period_history_viewer.dart';
 import 'package:bills_control/widgets/dev_name.dart';
 import 'package:bills_control/widgets/hystory_widgets.dart';
 import 'package:flutter/material.dart';
@@ -24,19 +26,29 @@ class GastosHistorial extends StatefulWidget {
 class _GastosHistorialState extends State<GastosHistorial> {
   bool _hasShownDialog = false;
   List<GastosItem> stateFilter = [];
+  List<GastosHistorialCerradoData> _closedHistory = [];
 
   @override
   void initState() {
     super.initState();
-    // Ejecutamos la lógica de reinicio de presupuestos antes de cargar datos
     BudgetLogic.checkAndResetBudgets().then((_) {
       if (mounted) {
         final ghCubit = context.read<GastosHistorialCubits>();
         ghCubit.clearGastosItems();
         ghCubit.getGastosItems();
         context.read<GastosCubits>().getGastos();
+        _loadClosedHistory();
       }
     });
+  }
+
+  Future<void> _loadClosedHistory() async {
+    final history = await readHistoryCerradoByGastoId(widget.id);
+    if (mounted) {
+      setState(() {
+        _closedHistory = List.from(history.reversed);
+      });
+    }
   }
 
   void _showAppropriateDialog(List<GastosItem> state) {
@@ -48,7 +60,6 @@ class _GastosHistorialState extends State<GastosHistorial> {
     final filtered =
         state.where((element) => element.gastoId == widget.id).toList();
 
-    // We only show the dialog once we are sure we have data or filtered is empty
     _hasShownDialog = true;
 
     if (filtered.isEmpty) {
@@ -90,30 +101,52 @@ class _GastosHistorialState extends State<GastosHistorial> {
   }
 
   void _confirmClosePeriod(Gasto budget) {
+    final l10n = AppLocalizations.of(context)!;
+    final isAnnual = budget.type == 'annual';
+    final now = DateTime.now();
+
     showDialog(
       context: context,
-      builder: (context) {
+      builder: (ctx) {
         return AlertDialog(
-          title: const Text("Cerrar Periodo"),
-          content: Text("¿Estás seguro de cerrar el periodo de '${budget.motivo}'? Los gastos actuales se archivarán y el saldo se reiniciará."),
+          title: Text(isAnnual ? l10n.cerrar_anio : l10n.cerrar_mes),
+          content: Text(
+            isAnnual
+                ? l10n.confirm_cerrar_anio(now.year.toString())
+                : l10n.confirm_cerrar_mes(budget.motivo),
+          ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Cancelar"),
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(l10n.etiqueta_cancelar),
             ),
             TextButton(
               onPressed: () async {
-                Navigator.pop(context);
-                await BudgetLogic.manualClosePeriod(budget);
+                Navigator.pop(ctx);
+                if (isAnnual) {
+                  await BudgetLogic.manualCloseAnnualPeriod(budget);
+                } else {
+                  await BudgetLogic.manualCloseMonthlyPeriod(budget);
+                }
                 if (mounted) {
                   context.read<GastosCubits>().getGastos();
                   context.read<GastosHistorialCubits>().getGastosItems();
+                  await _loadClosedHistory();
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Periodo cerrado y archivado correctamente")),
+                    SnackBar(
+                      content: Text(
+                        isAnnual
+                            ? 'Año cerrado y archivado correctamente'
+                            : 'Periodo cerrado y archivado correctamente',
+                      ),
+                    ),
                   );
                 }
               },
-              child: const Text("Confirmar Cierre", style: TextStyle(color: Colors.orangeAccent)),
+              child: Text(
+                isAnnual ? l10n.cerrar_anio : l10n.cerrar_mes,
+                style: const TextStyle(color: Colors.orangeAccent),
+              ),
             ),
           ],
         );
@@ -121,8 +154,114 @@ class _GastosHistorialState extends State<GastosHistorial> {
     );
   }
 
+  void _confirmDeletePeriod(GastosHistorialCerradoData entry) {
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.eliminar_periodo_titulo),
+        content: Text(l10n.eliminar_periodo_advertencia),
+        actions: [
+          // Export first
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              exportArchivedPeriod(entry, widget.name, context);
+            },
+            child: Text(
+              l10n.btn_exportar_primero,
+              style: const TextStyle(color: Colors.blueAccent),
+            ),
+          ),
+          // Delete anyway
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await deleteHistoryCerrado(entry.id);
+              await _loadClosedHistory();
+            },
+            child: Text(
+              l10n.btn_eliminar_de_todas_formas,
+              style: const TextStyle(color: Colors.redAccent),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPreviousPeriodsSection(AppLocalizations l10n) {
+    return ExpansionTile(
+      title: Text(
+        l10n.periodos_anteriores,
+        style: TextStyle(
+          fontSize: 13.dp,
+          fontWeight: FontWeight.w600,
+          color: Colors.blueGrey[200],
+        ),
+      ),
+      leading: Icon(Icons.history, color: Colors.blueGrey[300], size: 18.dp),
+      collapsedBackgroundColor: Colors.blueGrey.withOpacity(0.08),
+      backgroundColor: Colors.blueGrey.withOpacity(0.05),
+      children: _closedHistory.isEmpty
+          ? [
+              Padding(
+                padding: EdgeInsets.all(12.dp),
+                child: Text(
+                  l10n.no_periodos_anteriores,
+                  style:
+                      TextStyle(color: Colors.white38, fontSize: 12.dp),
+                ),
+              ),
+            ]
+          : _closedHistory.map((entry) {
+              return ListTile(
+                dense: true,
+                title: Text(
+                  entry.periodLabel,
+                  style: TextStyle(fontSize: 13.dp, color: Colors.white70),
+                ),
+                subtitle: Text(
+                  '${l10n.total_gastado_label}: ${entry.totalSpent.toStringAsFixed(2)} \$',
+                  style: TextStyle(fontSize: 11.dp, color: Colors.white38),
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // View button
+                    IconButton(
+                      icon: Icon(Icons.visibility_outlined,
+                          size: 18.dp, color: Colors.blueAccent),
+                      tooltip: 'Ver periodo',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => PeriodHistoryViewer(
+                              entry: entry,
+                              budgetName: widget.name,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    // Delete button
+                    IconButton(
+                      icon: Icon(Icons.delete_outline,
+                          size: 18.dp, color: Colors.redAccent),
+                      tooltip: l10n.eliminar_periodo_titulo,
+                      onPressed: () => _confirmDeletePeriod(entry),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(
@@ -140,7 +279,9 @@ class _GastosHistorialState extends State<GastosHistorial> {
                 style: TextStyle(
                   fontSize: 16.dp,
                   fontWeight: FontWeight.bold,
-                  color: currentGasto.amount > 0 ? Colors.greenAccent : Colors.redAccent,
+                  color: currentGasto.amount > 0
+                      ? Colors.greenAccent
+                      : Colors.redAccent,
                 ),
               );
             } catch (e) {
@@ -153,10 +294,12 @@ class _GastosHistorialState extends State<GastosHistorial> {
           child: BlocBuilder<GastosCubits, List<Gasto>>(
             builder: (context, state) {
               try {
-                final gastoC = state.firstWhere((element) => element.id == widget.id);
+                final gastoC =
+                    state.firstWhere((element) => element.id == widget.id);
                 double progress = 0;
                 if (gastoC.initialAmount > 0) {
-                  progress = (gastoC.initialAmount - gastoC.amount) / gastoC.initialAmount;
+                  progress = (gastoC.initialAmount - gastoC.amount) /
+                      gastoC.initialAmount;
                 }
                 return LinearProgressIndicator(
                   value: progress.clamp(0.0, 1.0),
@@ -179,14 +322,12 @@ class _GastosHistorialState extends State<GastosHistorial> {
                 context: context,
                 builder: (context) {
                   return AlertDialog(
-                    title: Text(
-                        AppLocalizations.of(context)!.alert_help_history_title),
-                    content: Text(AppLocalizations.of(context)!
-                        .alert_help_history_content),
+                    title: Text(l10n.alert_help_history_title),
+                    content: Text(l10n.alert_help_history_content),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: Text(AppLocalizations.of(context)!.alert_btn_ok),
+                        child: Text(l10n.alert_btn_ok),
                       ),
                     ],
                   );
@@ -195,7 +336,7 @@ class _GastosHistorialState extends State<GastosHistorial> {
             },
           ),
           IconButton(
-            tooltip: AppLocalizations.of(context)!.toolTip_add_gasto,
+            tooltip: l10n.toolTip_add_gasto,
             icon: const Icon(Icons.add),
             onPressed: () {
               Navigator.push(
@@ -209,7 +350,7 @@ class _GastosHistorialState extends State<GastosHistorial> {
             },
           ),
           IconButton(
-            tooltip: AppLocalizations.of(context)!.toolTip_export,
+            tooltip: l10n.toolTip_export,
             icon: const Icon(Icons.file_open),
             onPressed: () async {
               await convertDataToExcel(widget.id, context);
@@ -236,177 +377,198 @@ class _GastosHistorialState extends State<GastosHistorial> {
           ],
           child: BlocBuilder<GastosHistorialCubits, List<GastosItem>>(
             builder: (context, state) {
-            stateFilter = [];
-            for (var data in state) {
-              if (data.gastoId == widget.id) {
-                stateFilter.add(data);
+              stateFilter = [];
+              for (var data in state) {
+                if (data.gastoId == widget.id) {
+                  stateFilter.add(data);
+                }
               }
-            }
-            
-            return Column(
-              children: [
-                // Header Fijo para el Título y Monto
-                Container(
-                  width: 100.w,
-                  padding: EdgeInsets.symmetric(vertical: 15.dp, horizontal: 20.dp),
-                  decoration: BoxDecoration(
-                    color: Colors.blueGrey.withOpacity(0.1),
-                    border: Border(bottom: BorderSide(color: Colors.blueGrey, width: 1.dp)),
-                  ),
-                  child: BlocBuilder<GastosCubits, List<Gasto>>(
-                    builder: (context, gState) {
-                      try {
-                        final currentGasto = gState.firstWhere((e) => e.id == widget.id);
-                        return Column(
-                          children: [
-                            Text(
-                              widget.name,
-                              textAlign: TextAlign.center,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 15.dp,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white70,
-                              ),
-                            ),
-                            if (currentGasto.type != 'normal')
-                              Padding(
-                                padding: EdgeInsets.only(top: 10.dp),
-                                child: TextButton.icon(
-                                  onPressed: () => _confirmClosePeriod(currentGasto),
-                                  icon: Icon(Icons.history_toggle_off, size: 16.dp, color: Colors.orangeAccent),
-                                  label: Text(
-                                    "Cerrar Periodo", 
-                                    style: TextStyle(color: Colors.orangeAccent, fontSize: 12.dp)
-                                  ),
-                                  style: TextButton.styleFrom(
-                                    backgroundColor: Colors.white.withOpacity(0.05),
-                                    padding: EdgeInsets.symmetric(horizontal: 12.dp),
-                                  ),
+
+              return Column(
+                children: [
+                  // ── Fixed header: name + close button ──────────────────
+                  Container(
+                    width: 100.w,
+                    padding: EdgeInsets.symmetric(
+                        vertical: 15.dp, horizontal: 20.dp),
+                    decoration: BoxDecoration(
+                      color: Colors.blueGrey.withOpacity(0.1),
+                      border: Border(
+                          bottom: BorderSide(
+                              color: Colors.blueGrey, width: 1.dp)),
+                    ),
+                    child: BlocBuilder<GastosCubits, List<Gasto>>(
+                      builder: (context, gState) {
+                        try {
+                          final currentGasto =
+                              gState.firstWhere((e) => e.id == widget.id);
+                          return Column(
+                            children: [
+                              Text(
+                                widget.name,
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 15.dp,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white70,
                                 ),
                               ),
-                          ],
-                        );
-                      } catch (e) {
-                        return const SizedBox();
-                      }
-                    },
+                              if (currentGasto.type != 'normal')
+                                Padding(
+                                  padding: EdgeInsets.only(top: 10.dp),
+                                  child: TextButton.icon(
+                                    onPressed: () =>
+                                        _confirmClosePeriod(currentGasto),
+                                    icon: Icon(
+                                      Icons.history_toggle_off,
+                                      size: 16.dp,
+                                      color: Colors.orangeAccent,
+                                    ),
+                                    label: Text(
+                                      currentGasto.type == 'annual'
+                                          ? l10n.cerrar_anio
+                                          : l10n.cerrar_mes,
+                                      style: TextStyle(
+                                        color: Colors.orangeAccent,
+                                        fontSize: 12.dp,
+                                      ),
+                                    ),
+                                    style: TextButton.styleFrom(
+                                      backgroundColor:
+                                          Colors.white.withOpacity(0.05),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 12.dp),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          );
+                        } catch (e) {
+                          return const SizedBox();
+                        }
+                      },
+                    ),
                   ),
-                ),
-                // Lista de items expandida
-                Expanded(
-                  child: stateFilter.isEmpty
-                      ? Center(
-                          child: Text(
-                            AppLocalizations.of(context)!.no_items_history,
-                            style: const TextStyle(fontSize: 15),
+                  // ── Current items list ──────────────────────────────────
+                  Expanded(
+                    child: stateFilter.isEmpty
+                        ? Center(
+                            child: Text(
+                              l10n.no_items_history,
+                              style: const TextStyle(fontSize: 15),
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: stateFilter.length,
+                            itemBuilder: (context, index) {
+                              final ghisto =
+                                  context.read<GastosHistorialCubits>();
+                              final gasto = context.read<GastosCubits>();
+                              return Container(
+                                margin: EdgeInsets.only(
+                                  top: 10.dp,
+                                  left: 5.dp,
+                                  right: 5.dp,
+                                ),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Colors.blueGrey, width: 1.8.dp),
+                                ),
+                                alignment: Alignment.bottomCenter,
+                                padding: EdgeInsets.only(
+                                  top: 10.dp,
+                                  bottom: 10.dp,
+                                  left: 25.dp,
+                                  right: 10.dp,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          stateFilter[index].description,
+                                          style: TextStyle(
+                                            fontSize: 5.w,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        Text(
+                                          stateFilter[index].category,
+                                          style: TextStyle(
+                                            fontSize: 3.5.w,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        Text(
+                                          "${stateFilter[index].amount} \$",
+                                          style: TextStyle(
+                                            fontSize: 4.w,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon:
+                                              Icon(Icons.edit, size: 15.dp),
+                                          tooltip: l10n.toolTip_edit,
+                                          onPressed: () {
+                                            editGastoItem(
+                                              context,
+                                              index,
+                                              stateFilter,
+                                              ghisto,
+                                              gasto,
+                                            );
+                                            stateFilter = [];
+                                          },
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.delete,
+                                              size: 15.dp),
+                                          tooltip: l10n.toolTip_delete,
+                                          onPressed: () {
+                                            deleteGastoItem(
+                                              context,
+                                              stateFilter[index].gastoId,
+                                              stateFilter[index].id,
+                                              index,
+                                              stateFilter,
+                                              ghisto,
+                                              gasto,
+                                            );
+                                            stateFilter = [];
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
-                        )
-                      : ListView.builder(
-                          itemCount: stateFilter.length,
-                          itemBuilder: (context, index) {
-                            final ghisto = context.read<GastosHistorialCubits>();
-                            final gasto = context.read<GastosCubits>();
-                            return Container(
-                    margin: EdgeInsets.only(
-                      top: 10.dp,
-                      left: 5.dp,
-                      right: 5.dp,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.blueGrey, width: 1.8.dp),
-                    ),
-                    alignment: Alignment.bottomCenter,
-                    padding: EdgeInsets.only(
-                      top: 10.dp,
-                      bottom: 10.dp,
-                      left: 25.dp,
-                      right: 10.dp,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              stateFilter[index].description,
-                              style: TextStyle(
-                                fontSize: 5.w,
-                                color: Colors.white,
-                              ),
-                            ),
-                            Text(
-                              stateFilter[index].category,
-                              style: TextStyle(
-                                fontSize: 3.5.w,
-                                color: Colors.white,
-                              ),
-                            ),
-                            Text(
-                              "${stateFilter[index].amount} \$",
-                              style: TextStyle(
-                                fontSize: 4.w,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.edit, size: 15.dp),
-                              tooltip: AppLocalizations.of(
-                                context,
-                              )!.toolTip_edit,
-                              onPressed: () {
-                                editGastoItem(
-                                  context,
-                                  index,
-                                  stateFilter,
-                                  ghisto,
-                                  gasto,
-                                );
-                                stateFilter = [];
-                              },
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.delete, size: 15.dp),
-                              tooltip: AppLocalizations.of(
-                                context,
-                              )!.toolTip_delete,
-                              onPressed: () {
-                                deleteGastoItem(
-                                  context,
-                                  stateFilter[index].gastoId,
-                                  stateFilter[index].id,
-                                  index,
-                                  stateFilter,
-                                  ghisto,
-                                  gasto,
-                                );
-                                stateFilter = [];
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        );
-      },
-    ),
-  ),
-),
-bottomNavigationBar: bottomDevName(),
+                  ),
+                  // ── Previous periods section ────────────────────────────
+                  _buildPreviousPeriodsSection(l10n),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+      bottomNavigationBar: bottomDevName(),
     );
   }
 }

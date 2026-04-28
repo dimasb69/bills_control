@@ -51,5 +51,27 @@
     "tooltip_manage_categories": "Gerenciar categorias",
     "label_new_category": "Nova categoria",
     "tooltip_auto_help": "Ajuda automática",
-    "category_notice": "Na aba 'Personalizado' você pode criar e gerenciar suas próprias categorias."
+    "category_notice": "Na aba 'Personalizado' você pode criar e gerenciar suas próprias categorias.",
+    "cerrar_anio": "Fechar Ano",
+    "cerrar_mes": "Fechar Mês",
+    "confirm_cerrar_anio": "Fechar o ano {year}? Os gastos atuais serão arquivados e o orçamento será reiniciado para o próximo ano.",
+    "@confirm_cerrar_anio": {
+        "placeholders": {
+            "year": { "type": "String" }
+        }
+    },
+    "confirm_cerrar_mes": "Fechar o período '{name}'? Os gastos atuais serão arquivados e o saldo será reiniciado.",
+    "@confirm_cerrar_mes": {
+        "placeholders": {
+            "name": { "type": "String" }
+        }
+    },
+    "periodos_anteriores": "Períodos Anteriores",
+    "no_periodos_anteriores": "Sem períodos arquivados",
+    "eliminar_periodo_titulo": "Excluir Período",
+    "eliminar_periodo_advertencia": "⚠️ Uma vez excluído, não há como recuperar esses movimentos.\n\nRecomenda-se exportar primeiro antes de excluir.",
+    "btn_exportar_primero": "Exportar Primeiro",
+    "btn_eliminar_de_todas_formas": "Excluir mesmo assim",
+    "total_gastado_label": "Total gasto",
+    "visor_periodo_titulo": "Período"
 }

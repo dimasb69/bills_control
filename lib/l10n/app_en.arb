@@ -150,5 +150,27 @@
     "tooltip_manage_categories": "Manage categories",
     "label_new_category": "New category",
     "tooltip_auto_help": "Automatic help",
-    "category_notice": "In the 'Custom' tab you can create and manage your own categories."
+    "category_notice": "In the 'Custom' tab you can create and manage your own categories.",
+    "cerrar_anio": "Close Year",
+    "cerrar_mes": "Close Month",
+    "confirm_cerrar_anio": "Close year {year}? Current expenses will be archived and the budget will reset for the next year.",
+    "@confirm_cerrar_anio": {
+        "placeholders": {
+            "year": { "type": "String" }
+        }
+    },
+    "confirm_cerrar_mes": "Close period '{name}'? Current expenses will be archived and the balance will reset.",
+    "@confirm_cerrar_mes": {
+        "placeholders": {
+            "name": { "type": "String" }
+        }
+    },
+    "periodos_anteriores": "Previous Periods",
+    "no_periodos_anteriores": "No archived periods",
+    "eliminar_periodo_titulo": "Delete Period",
+    "eliminar_periodo_advertencia": "⚠️ Once deleted, there is no way to recover these records.\n\nIt is recommended to export first before deleting.",
+    "btn_exportar_primero": "Export First",
+    "btn_eliminar_de_todas_formas": "Delete Anyway",
+    "total_gastado_label": "Total spent",
+    "visor_periodo_titulo": "Period"
 }

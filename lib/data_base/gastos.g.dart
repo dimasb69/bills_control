@@ -974,6 +974,18 @@ class $GastosHistorialCerradoTable extends GastosHistorialCerrado
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _periodTypeMeta = const VerificationMeta(
+    'periodType',
+  );
+  @override
+  late final GeneratedColumn<String> periodType = GeneratedColumn<String>(
+    'period_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('monthly'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -981,6 +993,7 @@ class $GastosHistorialCerradoTable extends GastosHistorialCerrado
     periodLabel,
     jsonPath,
     totalSpent,
+    periodType,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1032,6 +1045,12 @@ class $GastosHistorialCerradoTable extends GastosHistorialCerrado
     } else if (isInserting) {
       context.missing(_totalSpentMeta);
     }
+    if (data.containsKey('period_type')) {
+      context.handle(
+        _periodTypeMeta,
+        periodType.isAcceptableOrUnknown(data['period_type']!, _periodTypeMeta),
+      );
+    }
     return context;
   }
 
@@ -1064,6 +1083,10 @@ class $GastosHistorialCerradoTable extends GastosHistorialCerrado
         DriftSqlType.double,
         data['${effectivePrefix}total_spent'],
       )!,
+      periodType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}period_type'],
+      )!,
     );
   }
 
@@ -1080,12 +1103,14 @@ class GastosHistorialCerradoData extends DataClass
   final String periodLabel;
   final String jsonPath;
   final double totalSpent;
+  final String periodType;
   const GastosHistorialCerradoData({
     required this.id,
     required this.gastoId,
     required this.periodLabel,
     required this.jsonPath,
     required this.totalSpent,
+    required this.periodType,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1095,6 +1120,7 @@ class GastosHistorialCerradoData extends DataClass
     map['period_label'] = Variable<String>(periodLabel);
     map['json_path'] = Variable<String>(jsonPath);
     map['total_spent'] = Variable<double>(totalSpent);
+    map['period_type'] = Variable<String>(periodType);
     return map;
   }
 
@@ -1105,6 +1131,7 @@ class GastosHistorialCerradoData extends DataClass
       periodLabel: Value(periodLabel),
       jsonPath: Value(jsonPath),
       totalSpent: Value(totalSpent),
+      periodType: Value(periodType),
     );
   }
 
@@ -1119,6 +1146,7 @@ class GastosHistorialCerradoData extends DataClass
       periodLabel: serializer.fromJson<String>(json['periodLabel']),
       jsonPath: serializer.fromJson<String>(json['jsonPath']),
       totalSpent: serializer.fromJson<double>(json['totalSpent']),
+      periodType: serializer.fromJson<String>(json['periodType']),
     );
   }
   @override
@@ -1130,6 +1158,7 @@ class GastosHistorialCerradoData extends DataClass
       'periodLabel': serializer.toJson<String>(periodLabel),
       'jsonPath': serializer.toJson<String>(jsonPath),
       'totalSpent': serializer.toJson<double>(totalSpent),
+      'periodType': serializer.toJson<String>(periodType),
     };
   }
 
@@ -1139,12 +1168,14 @@ class GastosHistorialCerradoData extends DataClass
     String? periodLabel,
     String? jsonPath,
     double? totalSpent,
+    String? periodType,
   }) => GastosHistorialCerradoData(
     id: id ?? this.id,
     gastoId: gastoId ?? this.gastoId,
     periodLabel: periodLabel ?? this.periodLabel,
     jsonPath: jsonPath ?? this.jsonPath,
     totalSpent: totalSpent ?? this.totalSpent,
+    periodType: periodType ?? this.periodType,
   );
   GastosHistorialCerradoData copyWithCompanion(
     GastosHistorialCerradoCompanion data,
@@ -1159,6 +1190,9 @@ class GastosHistorialCerradoData extends DataClass
       totalSpent: data.totalSpent.present
           ? data.totalSpent.value
           : this.totalSpent,
+      periodType: data.periodType.present
+          ? data.periodType.value
+          : this.periodType,
     );
   }
 
@@ -1169,14 +1203,15 @@ class GastosHistorialCerradoData extends DataClass
           ..write('gastoId: $gastoId, ')
           ..write('periodLabel: $periodLabel, ')
           ..write('jsonPath: $jsonPath, ')
-          ..write('totalSpent: $totalSpent')
+          ..write('totalSpent: $totalSpent, ')
+          ..write('periodType: $periodType')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode =>
-      Object.hash(id, gastoId, periodLabel, jsonPath, totalSpent);
+      Object.hash(id, gastoId, periodLabel, jsonPath, totalSpent, periodType);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1185,7 +1220,8 @@ class GastosHistorialCerradoData extends DataClass
           other.gastoId == this.gastoId &&
           other.periodLabel == this.periodLabel &&
           other.jsonPath == this.jsonPath &&
-          other.totalSpent == this.totalSpent);
+          other.totalSpent == this.totalSpent &&
+          other.periodType == this.periodType);
 }
 
 class GastosHistorialCerradoCompanion
@@ -1195,12 +1231,14 @@ class GastosHistorialCerradoCompanion
   final Value<String> periodLabel;
   final Value<String> jsonPath;
   final Value<double> totalSpent;
+  final Value<String> periodType;
   const GastosHistorialCerradoCompanion({
     this.id = const Value.absent(),
     this.gastoId = const Value.absent(),
     this.periodLabel = const Value.absent(),
     this.jsonPath = const Value.absent(),
     this.totalSpent = const Value.absent(),
+    this.periodType = const Value.absent(),
   });
   GastosHistorialCerradoCompanion.insert({
     this.id = const Value.absent(),
@@ -1208,6 +1246,7 @@ class GastosHistorialCerradoCompanion
     required String periodLabel,
     required String jsonPath,
     required double totalSpent,
+    this.periodType = const Value.absent(),
   }) : gastoId = Value(gastoId),
        periodLabel = Value(periodLabel),
        jsonPath = Value(jsonPath),
@@ -1218,6 +1257,7 @@ class GastosHistorialCerradoCompanion
     Expression<String>? periodLabel,
     Expression<String>? jsonPath,
     Expression<double>? totalSpent,
+    Expression<String>? periodType,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1225,6 +1265,7 @@ class GastosHistorialCerradoCompanion
       if (periodLabel != null) 'period_label': periodLabel,
       if (jsonPath != null) 'json_path': jsonPath,
       if (totalSpent != null) 'total_spent': totalSpent,
+      if (periodType != null) 'period_type': periodType,
     });
   }
 
@@ -1234,6 +1275,7 @@ class GastosHistorialCerradoCompanion
     Value<String>? periodLabel,
     Value<String>? jsonPath,
     Value<double>? totalSpent,
+    Value<String>? periodType,
   }) {
     return GastosHistorialCerradoCompanion(
       id: id ?? this.id,
@@ -1241,6 +1283,7 @@ class GastosHistorialCerradoCompanion
       periodLabel: periodLabel ?? this.periodLabel,
       jsonPath: jsonPath ?? this.jsonPath,
       totalSpent: totalSpent ?? this.totalSpent,
+      periodType: periodType ?? this.periodType,
     );
   }
 
@@ -1262,6 +1305,9 @@ class GastosHistorialCerradoCompanion
     if (totalSpent.present) {
       map['total_spent'] = Variable<double>(totalSpent.value);
     }
+    if (periodType.present) {
+      map['period_type'] = Variable<String>(periodType.value);
+    }
     return map;
   }
 
@@ -1272,7 +1318,8 @@ class GastosHistorialCerradoCompanion
           ..write('gastoId: $gastoId, ')
           ..write('periodLabel: $periodLabel, ')
           ..write('jsonPath: $jsonPath, ')
-          ..write('totalSpent: $totalSpent')
+          ..write('totalSpent: $totalSpent, ')
+          ..write('periodType: $periodType')
           ..write(')'))
         .toString();
   }
@@ -2522,6 +2569,7 @@ typedef $$GastosHistorialCerradoTableCreateCompanionBuilder =
       required String periodLabel,
       required String jsonPath,
       required double totalSpent,
+      Value<String> periodType,
     });
 typedef $$GastosHistorialCerradoTableUpdateCompanionBuilder =
     GastosHistorialCerradoCompanion Function({
@@ -2530,6 +2578,7 @@ typedef $$GastosHistorialCerradoTableUpdateCompanionBuilder =
       Value<String> periodLabel,
       Value<String> jsonPath,
       Value<double> totalSpent,
+      Value<String> periodType,
     });
 
 final class $$GastosHistorialCerradoTableReferences
@@ -2594,6 +2643,11 @@ class $$GastosHistorialCerradoTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get periodType => $composableBuilder(
+    column: $table.periodType,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$GastosTableFilterComposer get gastoId {
     final $$GastosTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -2647,6 +2701,11 @@ class $$GastosHistorialCerradoTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get periodType => $composableBuilder(
+    column: $table.periodType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$GastosTableOrderingComposer get gastoId {
     final $$GastosTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -2693,6 +2752,11 @@ class $$GastosHistorialCerradoTableAnnotationComposer
 
   GeneratedColumn<double> get totalSpent => $composableBuilder(
     column: $table.totalSpent,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get periodType => $composableBuilder(
+    column: $table.periodType,
     builder: (column) => column,
   );
 
@@ -2764,12 +2828,14 @@ class $$GastosHistorialCerradoTableTableManager
                 Value<String> periodLabel = const Value.absent(),
                 Value<String> jsonPath = const Value.absent(),
                 Value<double> totalSpent = const Value.absent(),
+                Value<String> periodType = const Value.absent(),
               }) => GastosHistorialCerradoCompanion(
                 id: id,
                 gastoId: gastoId,
                 periodLabel: periodLabel,
                 jsonPath: jsonPath,
                 totalSpent: totalSpent,
+                periodType: periodType,
               ),
           createCompanionCallback:
               ({
@@ -2778,12 +2844,14 @@ class $$GastosHistorialCerradoTableTableManager
                 required String periodLabel,
                 required String jsonPath,
                 required double totalSpent,
+                Value<String> periodType = const Value.absent(),
               }) => GastosHistorialCerradoCompanion.insert(
                 id: id,
                 gastoId: gastoId,
                 periodLabel: periodLabel,
                 jsonPath: jsonPath,
                 totalSpent: totalSpent,
+                periodType: periodType,
               ),
           withReferenceMapper: (p0) => p0
               .map(

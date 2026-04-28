@@ -16,44 +16,56 @@ class BudgetLogic {
       bool shouldReset = false;
 
       if (budget.type == 'monthly') {
-        if (now.year > lastReset.year || (now.year == lastReset.year && now.month > lastReset.month)) {
+        // Reset when the month has changed
+        if (now.year > lastReset.year ||
+            (now.year == lastReset.year && now.month > lastReset.month)) {
           shouldReset = true;
         }
       } else if (budget.type == 'annual') {
-        // According to user request: "al terminar el mes tome solo los gastos... y cree el nuevo mes"
-        // This implies even Annual archives monthly.
-        if (now.year > lastReset.year || (now.year == lastReset.year && now.month > lastReset.month)) {
+        // Annual only resets when the YEAR changes (not the month)
+        if (now.year > lastReset.year) {
           shouldReset = true;
         }
       }
 
       if (shouldReset) {
-        await closePeriod(budget, lastReset);
+        if (budget.type == 'monthly') {
+          await _closeMonthlyPeriod(budget, lastReset);
+        } else if (budget.type == 'annual') {
+          await _closeAnnualPeriod(budget, lastReset);
+        }
       }
     }
   }
 
-  static Future<void> manualClosePeriod(Gasto budget) async {
+  /// Manual close for monthly budgets (user-triggered)
+  static Future<void> manualCloseMonthlyPeriod(Gasto budget) async {
     final now = DateTime.now();
-    // Calculate the start of the next month
-    DateTime nextPeriod;
+    await _closeMonthlyPeriod(budget, now);
+    // Set lastResetDate to the start of the next month
+    DateTime nextMonth;
     if (now.month == 12) {
-      nextPeriod = DateTime(now.year + 1, 1, 1);
+      nextMonth = DateTime(now.year + 1, 1, 1);
     } else {
-      nextPeriod = DateTime(now.year, now.month + 1, 1);
+      nextMonth = DateTime(now.year, now.month + 1, 1);
     }
-    
-    await closePeriod(budget, now);
-    // Update the lastResetDate to the future period start
-    await resetGastoPeriod(budget.id, budget.initialAmount, nextPeriod);
+    await resetGastoPeriod(budget.id, budget.initialAmount, nextMonth);
   }
 
-  static Future<void> closePeriod(Gasto budget, DateTime periodDate) async {
-    // 1. Get items for this budget
+  /// Manual close for annual budgets (user-triggered)
+  static Future<void> manualCloseAnnualPeriod(Gasto budget) async {
+    final now = DateTime.now();
+    await _closeAnnualPeriod(budget, now);
+    // Set lastResetDate to Jan 1 of next year
+    final nextYear = DateTime(now.year + 1, 1, 1);
+    await resetGastoPeriod(budget.id, budget.initialAmount, nextYear);
+  }
+
+  /// Close a monthly period: archives items to JSON, records in DB, resets budget
+  static Future<void> _closeMonthlyPeriod(Gasto budget, DateTime periodDate) async {
     final allItems = await readAllGastosItems();
     final budgetItems = allItems.where((item) => item.gastoId == budget.id).toList();
 
-    // Prepare JSON data (even if empty, to record the period closure)
     final jsonData = budgetItems.map((item) => {
       'description': item.description,
       'date': item.date.toIso8601String(),
@@ -62,39 +74,67 @@ class BudgetLogic {
       'type': item.type,
     }).toList();
 
-    // 2. Save to File
     final directory = await getApplicationSupportDirectory();
-    // Use periodDate for the label (e.g. if we close on April 27, it's the "Abril" period)
-    final periodLabel = "${periodDate.month}_${periodDate.year}";
-    final fileName = "history_${budget.id}_$periodLabel.json";
-    final file = File("${directory.path}/$fileName");
-    
+    final periodLabel = _getMonthlyPeriodName(periodDate);
+    final safeLabel = '${periodDate.month}_${periodDate.year}';
+    final fileName = 'history_${budget.id}_$safeLabel.json';
+    final file = File('${directory.path}/$fileName');
     await file.writeAsString(jsonEncode(jsonData));
 
-    // 3. Calculate total spent in this period
     double totalSpent = budgetItems.fold(0, (sum, item) => sum + item.amount);
 
-    // 4. Update Database (Record the closed period)
     await writeHistoryCerrado(
       budget.id,
-      _getPeriodName(periodDate),
+      periodLabel,
       file.path,
       totalSpent,
+      periodType: 'monthly',
     );
 
-    // 5. Reset Budget
-    // Default reset to now, unless overridden by manualClosePeriod
+    // Reset budget to initial amount, update lastResetDate
     await resetGastoPeriod(budget.id, budget.initialAmount, DateTime.now());
   }
 
-  static String _getPeriodName(DateTime date) {
-    final months = [
+  /// Close an annual period: archives all items to JSON, records in DB, resets budget
+  static Future<void> _closeAnnualPeriod(Gasto budget, DateTime periodDate) async {
+    final allItems = await readAllGastosItems();
+    final budgetItems = allItems.where((item) => item.gastoId == budget.id).toList();
+
+    final jsonData = budgetItems.map((item) => {
+      'description': item.description,
+      'date': item.date.toIso8601String(),
+      'amount': item.amount,
+      'category': item.category,
+      'type': item.type,
+    }).toList();
+
+    final directory = await getApplicationSupportDirectory();
+    // Annual label is just the year number
+    final yearLabel = '${periodDate.year}';
+    final fileName = 'history_annual_${budget.id}_$yearLabel.json';
+    final file = File('${directory.path}/$fileName');
+    await file.writeAsString(jsonEncode(jsonData));
+
+    double totalSpent = budgetItems.fold(0, (sum, item) => sum + item.amount);
+
+    await writeHistoryCerrado(
+      budget.id,
+      yearLabel,
+      file.path,
+      totalSpent,
+      periodType: 'annual',
+    );
+
+    // Reset budget and set lastResetDate to Jan 1 of next year
+    final nextYear = DateTime(periodDate.year + 1, 1, 1);
+    await resetGastoPeriod(budget.id, budget.initialAmount, nextYear);
+  }
+
+  static String _getMonthlyPeriodName(DateTime date) {
+    const months = [
       'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
     ];
-    // Check if the date is actually in the future (next period)
-    // but the closure refers to the current one.
-    // However, usually _getPeriodName is called with the date of the period being CLOSED.
-    return "${months[date.month - 1]} ${date.year}";
+    return '${months[date.month - 1]} ${date.year}';
   }
 }
