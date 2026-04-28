@@ -9,6 +9,9 @@ class Gastos extends Table {
   TextColumn get motivo => text().withLength(min: 4, max: 32)();
   DateTimeColumn get date => dateTime()();
   RealColumn get amount => real()();
+  RealColumn get initialAmount => real().withDefault(const Constant(0))();
+  TextColumn get type => text().withDefault(const Constant('normal'))();
+  DateTimeColumn get lastResetDate => dateTime().nullable()();
 }
 
 class GastosItems extends Table {
@@ -22,6 +25,15 @@ class GastosItems extends Table {
   TextColumn get type => text()();
 }
 
+class GastosHistorialCerrado extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get gastoId =>
+      integer().references(Gastos, #id, onDelete: KeyAction.cascade)();
+  TextColumn get periodLabel => text()();
+  TextColumn get jsonPath => text()();
+  RealColumn get totalSpent => real()();
+}
+
 class Categorias extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().withLength(min: 2, max: 32)();
@@ -32,13 +44,13 @@ class AppSettings extends Table {
   BoolColumn get showAutoHelp => boolean().withDefault(const Constant(true))();
 }
 
-@DriftDatabase(tables: [Gastos, GastosItems, Categorias, AppSettings])
+@DriftDatabase(tables: [Gastos, GastosItems, GastosHistorialCerrado, Categorias, AppSettings])
 class GastosDatabase extends _$GastosDatabase {
   GastosDatabase([QueryExecutor? executor])
       : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration {
@@ -58,6 +70,14 @@ class GastosDatabase extends _$GastosDatabase {
           // This will apply the new KeyAction.cascade constraint.
           await m.deleteTable('gastos_items');
           await m.createTable(gastosItems);
+        }
+        if (from < 5) {
+          // New columns in Gastos
+          await m.addColumn(gastos, gastos.initialAmount);
+          await m.addColumn(gastos, gastos.type);
+          await m.addColumn(gastos, gastos.lastResetDate);
+          // New table
+          await m.createTable(gastosHistorialCerrado);
         }
       },
       beforeOpen: (details) async {

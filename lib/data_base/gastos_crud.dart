@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:bills_control/data_base/gastos.dart';
 import 'package:drift/drift.dart';
 
@@ -11,11 +12,18 @@ Future<List<Gasto>> readAllGastos() async {
   return allGastos;
 }
 
-Future<void> writeGasto(String motivo, DateTime date, double amount) async {
+Future<void> writeGasto(String motivo, DateTime date, double amount, {String type = 'normal'}) async {
   await gastosDatabase
       .into(gastosDatabase.gastos)
       .insert(
-        GastosCompanion.insert(motivo: motivo, date: date, amount: amount),
+        GastosCompanion.insert(
+          motivo: motivo, 
+          date: date, 
+          amount: amount,
+          initialAmount: Value(amount),
+          type: Value(type),
+          lastResetDate: Value(DateTime.now()),
+        ),
       );
 }
 
@@ -27,6 +35,21 @@ Future<List<Gasto>> readGastoById(int id) async {
 }
 
 Future<void> deleteGasto(int id) async {
+  // Get all closed history entries for this budget to delete physical files
+  final closedHistory = await (gastosDatabase.select(gastosDatabase.gastosHistorialCerrado)
+    ..where((t) => t.gastoId.equals(id))).get();
+  
+  for (var entry in closedHistory) {
+    try {
+      final file = File(entry.jsonPath);
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (e) {
+      // Ignore errors if file doesn't exist or can't be deleted
+    }
+  }
+
   await gastosDatabase.transaction(() async {
     await (gastosDatabase.delete(gastosDatabase.gastos)
           ..where((t) => t.id.equals(id)))
@@ -70,32 +93,42 @@ Future<void> updateSettings(bool showAutoHelp) async {
 }
 
 Future updateGasto(int id, String motivo, double newAmount) async {
+  // If user manually updates the current amount, we should probably adjust initialAmount too
+  // Or at least ensure it's not smaller than the current amount.
+  // Let's just update both for simplicity in this case.
   return (gastosDatabase.update(gastosDatabase.gastos)
         ..where((t) => t.id.equals(id)))
-      .write(GastosCompanion(motivo: Value(motivo), amount: Value(newAmount)));
+      .write(GastosCompanion(
+        motivo: Value(motivo), 
+        amount: Value(newAmount),
+        initialAmount: Value(newAmount), // Resetting budget base
+      ));
 }
 
-Future restarGasto(int id, double newAmount) async {
-  List<Gasto> currAmount = await (gastosDatabase.select(
+Future restarGasto(int id, double amountToSubtract) async {
+  List<Gasto> curr = await (gastosDatabase.select(
     gastosDatabase.gastos,
   )..where((t) => t.id.equals(id))).get();
 
   return (gastosDatabase.update(
     gastosDatabase.gastos,
   )..where((t) => t.id.equals(id))).write(
-    GastosCompanion(amount: Value(currAmount.first.amount - newAmount)),
+    GastosCompanion(amount: Value(curr.first.amount - amountToSubtract)),
   );
 }
 
-Future sumarGasto(int id, double newAmount) async {
-  List<Gasto> currAmount = await (gastosDatabase.select(
+Future sumarGasto(int id, double amountToAdd) async {
+  List<Gasto> curr = await (gastosDatabase.select(
     gastosDatabase.gastos,
   )..where((t) => t.id.equals(id))).get();
 
   return (gastosDatabase.update(
     gastosDatabase.gastos,
   )..where((t) => t.id.equals(id))).write(
-    GastosCompanion(amount: Value(currAmount.first.amount + newAmount)),
+    GastosCompanion(
+      amount: Value(curr.first.amount + amountToAdd),
+      initialAmount: Value(curr.first.initialAmount + amountToAdd),
+    ),
   );
 }
 
@@ -156,4 +189,39 @@ Future updateGastoItem(
       type: Value(type),
     ),
   );
+}
+//Tabla Gastos Historial Cerrado (Externo)
+Future<List<GastosHistorialCerradoData>> readHistoryCerradoByGastoId(int gastoId) async {
+  return await (gastosDatabase.select(gastosDatabase.gastosHistorialCerrado)
+    ..where((t) => t.gastoId.equals(gastoId))).get();
+}
+
+Future<void> writeHistoryCerrado(
+  int gastoId,
+  String periodLabel,
+  String jsonPath,
+  double totalSpent,
+) async {
+  await gastosDatabase.into(gastosDatabase.gastosHistorialCerrado).insert(
+    GastosHistorialCerradoCompanion.insert(
+      gastoId: gastoId,
+      periodLabel: periodLabel,
+      jsonPath: jsonPath,
+      totalSpent: totalSpent,
+    ),
+  );
+}
+
+Future<void> resetGastoPeriod(int id, double initialAmount, DateTime newDate) async {
+  await (gastosDatabase.update(gastosDatabase.gastos)
+    ..where((t) => t.id.equals(id)))
+  .write(GastosCompanion(
+    amount: Value(initialAmount),
+    lastResetDate: Value(newDate),
+  ));
+  
+  // Delete current items from DB for this budget (as they are now in JSON)
+  await (gastosDatabase.delete(gastosDatabase.gastosItems)
+    ..where((t) => t.gastoId.equals(id)))
+  .go();
 }

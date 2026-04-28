@@ -16,52 +16,18 @@ class GastosCubits extends Cubit<List<Gasto>> {
   }
 
   void updGasto(int id, String motivo, double amount, DateTime date) async {
-    emit(
-      state
-          .map(
-            (gasto) => gasto.id == id
-                ? Gasto(id: id, motivo: motivo, amount: amount, date: date)
-                : gasto,
-          )
-          .toList(),
-    );
     await updateGasto(id, motivo, amount);
+    getGastos();
   }
 
   void resGasto(int id, double amount) async {
-    emit(
-      state
-          .map(
-            (gasto) => gasto.id == id
-                ? Gasto(
-                    id: id,
-                    motivo: gasto.motivo,
-                    amount: gasto.amount - amount,
-                    date: gasto.date,
-                  )
-                : gasto,
-          )
-          .toList(),
-    );
     await restarGasto(id, amount);
+    getGastos();
   }
 
   void sumGasto(int id, double amount) async {
-    emit(
-      state
-          .map(
-            (gasto) => gasto.id == id
-                ? Gasto(
-                    id: id,
-                    motivo: gasto.motivo,
-                    amount: gasto.amount + amount,
-                    date: gasto.date,
-                  )
-                : gasto,
-          )
-          .toList(),
-    );
     await sumarGasto(id, amount);
+    getGastos();
   }
 }
 

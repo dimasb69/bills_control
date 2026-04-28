@@ -26,8 +26,16 @@ class GastosHistorialAdd extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DateTime now = DateTime.now();
-    dateController.text = '${now.year}/${now.month}/${now.day}';
+    final budget = context.read<GastosCubits>().state.firstWhere((e) => e.id == id);
+    DateTime defaultDate = DateTime.now();
+    bool isFuturePeriod = false;
+
+    if (budget.lastResetDate != null && budget.lastResetDate!.isAfter(defaultDate)) {
+      defaultDate = budget.lastResetDate!;
+      isFuturePeriod = true;
+    }
+
+    dateController.text = '${defaultDate.year}/${defaultDate.month}/${defaultDate.day}';
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(
@@ -56,6 +64,28 @@ class GastosHistorialAdd extends StatelessWidget {
           child: Center(
             child: Column(
               children: [
+                if (isFuturePeriod)
+                  Container(
+                    margin: EdgeInsets.only(bottom: 20.dp),
+                    padding: EdgeInsets.all(10.dp),
+                    decoration: BoxDecoration(
+                      color: Colors.orangeAccent.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8.dp),
+                      border: Border.all(color: Colors.orangeAccent),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.info_outline, color: Colors.orangeAccent),
+                        SizedBox(width: 10.dp),
+                        Expanded(
+                          child: Text(
+                            "Este periodo ya fue cerrado. El gasto se registrará automáticamente para el próximo mes (${defaultDate.day}/${defaultDate.month}/${defaultDate.year}).",
+                            style: TextStyle(fontSize: 12.dp, color: Colors.orangeAccent),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 TextField(
                   controller: descriptionController,
                   maxLength: 30,

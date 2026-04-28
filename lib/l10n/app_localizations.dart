@@ -160,6 +160,12 @@ abstract class AppLocalizations {
   /// **'Amount to manage'**
   String get etiqueta_monto;
 
+  /// Header for the spent amount column in Excel
+  ///
+  /// In en, this message translates to:
+  /// **'Spent Amount'**
+  String get excel_header_monto_gastado;
+
   /// Etiqueta del TextEdit Fecha
   ///
   /// In en, this message translates to:

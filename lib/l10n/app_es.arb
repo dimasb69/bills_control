@@ -9,6 +9,7 @@
     "etiqueta_motivo": "Motivo / Concepto",
     "hint_motivo": "Ej: Vacaciones, Viaje de trabajo, Gastos del mes",
     "etiqueta_monto": "Monto a manejar",
+    "excel_header_monto_gastado": "Monto gastado",
     "etiqueta_fecha": "Fecha",
     "etiqueta_guardar": "Guardar",
     "etiqueta_actualizar": "Actualizar",

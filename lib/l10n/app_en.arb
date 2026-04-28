@@ -33,8 +33,12 @@
         "description": "Etiqueta del TextEdit Motivo"
     },
     "etiqueta_monto": "Amount to manage",
-    "@etiqueta_monto":{
-        "description": "Etiqueta del TextEdit Monto"
+    "@etiqueta_monto": {
+      "description": "Etiqueta del TextEdit Monto"
+    },
+    "excel_header_monto_gastado": "Spent Amount",
+    "@excel_header_monto_gastado": {
+      "description": "Header for the spent amount column in Excel"
     },
     "etiqueta_fecha": "Date",
     "@etiqueta_fecha":{
@@ -63,10 +67,6 @@
     "toolTip_add_gasto": "Add Expense",
     "@toolTip_add_gasto":{
         "description": "tool tip del boton agregar gasto"
-    },
-    "toolTip_export": "Export to Excel",
-    "@toolTip_export":{
-        "description": "tool tip del boton exportar"
     },
     "tittle_add_new_history": "New movement to",
     "@tittle_add_new_history":{

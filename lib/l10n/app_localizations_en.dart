@@ -40,6 +40,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get etiqueta_monto => 'Amount to manage';
 
   @override
+  String get excel_header_monto_gastado => 'Spent Amount';
+
+  @override
   String get etiqueta_fecha => 'Date';
 
   @override

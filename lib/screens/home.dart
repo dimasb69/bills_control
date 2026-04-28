@@ -7,6 +7,7 @@ import 'package:bills_control/widgets/dev_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
+import 'package:bills_control/logic/budget_logic.dart';
 
 import '../l10n/app_localizations.dart';
 
@@ -19,6 +20,16 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   bool _hasShownDialog = false;
+
+  @override
+  void initState() {
+    super.initState();
+    BudgetLogic.checkAndResetBudgets().then((_) {
+      if (mounted) {
+        context.read<GastosCubits>().getGastos();
+      }
+    });
+  }
 
   void _showAppropriateDialog(List<Gasto> state) {
     if (_hasShownDialog || !mounted) return;

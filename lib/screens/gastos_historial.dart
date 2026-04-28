@@ -8,6 +8,7 @@ import 'package:bills_control/widgets/hystory_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
+import 'package:bills_control/logic/budget_logic.dart';
 
 class GastosHistorial extends StatefulWidget {
   const GastosHistorial({Key? key, required this.id, required this.name})
@@ -27,10 +28,15 @@ class _GastosHistorialState extends State<GastosHistorial> {
   @override
   void initState() {
     super.initState();
-    // Limpiamos y cargamos los datos al iniciar la pantalla
-    final ghCubit = context.read<GastosHistorialCubits>();
-    ghCubit.clearGastosItems();
-    ghCubit.getGastosItems();
+    // Ejecutamos la lógica de reinicio de presupuestos antes de cargar datos
+    BudgetLogic.checkAndResetBudgets().then((_) {
+      if (mounted) {
+        final ghCubit = context.read<GastosHistorialCubits>();
+        ghCubit.clearGastosItems();
+        ghCubit.getGastosItems();
+        context.read<GastosCubits>().getGastos();
+      }
+    });
   }
 
   void _showAppropriateDialog(List<GastosItem> state) {
@@ -83,6 +89,38 @@ class _GastosHistorialState extends State<GastosHistorial> {
     }
   }
 
+  void _confirmClosePeriod(Gasto budget) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Cerrar Periodo"),
+          content: Text("¿Estás seguro de cerrar el periodo de '${budget.motivo}'? Los gastos actuales se archivarán y el saldo se reiniciará."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                await BudgetLogic.manualClosePeriod(budget);
+                if (mounted) {
+                  context.read<GastosCubits>().getGastos();
+                  context.read<GastosHistorialCubits>().getGastosItems();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Periodo cerrado y archivado correctamente")),
+                  );
+                }
+              },
+              child: const Text("Confirmar Cierre", style: TextStyle(color: Colors.orangeAccent)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,29 +131,45 @@ class _GastosHistorialState extends State<GastosHistorial> {
             Navigator.pop(context);
           },
         ),
-        title: Row(
-          children: [
-            BlocBuilder<GastosCubits, List<Gasto>>(
-              builder: (context, state) {
+        title: BlocBuilder<GastosCubits, List<Gasto>>(
+          builder: (context, state) {
+            try {
+              final currentGasto = state.firstWhere((e) => e.id == widget.id);
+              return Text(
+                "${currentGasto.amount.toStringAsFixed(2)} \$",
+                style: TextStyle(
+                  fontSize: 16.dp,
+                  fontWeight: FontWeight.bold,
+                  color: currentGasto.amount > 0 ? Colors.greenAccent : Colors.redAccent,
+                ),
+              );
+            } catch (e) {
+              return const SizedBox();
+            }
+          },
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(6.0),
+          child: BlocBuilder<GastosCubits, List<Gasto>>(
+            builder: (context, state) {
+              try {
                 final gastoC = state.firstWhere((element) => element.id == widget.id);
-                return Row(
-                  children: [
-                    Text(
-                      widget.name.length > 16 ? widget.name.substring(0, 16) : widget.name,
-                      style: TextStyle(fontSize: 14.dp),
-                    ),
-                    Text(
-                      " - ${gastoC.amount} \$",
-                      style: TextStyle(
-                        fontSize: 14.dp,
-                        color: gastoC.amount > 0 ? Colors.green : Colors.red,
-                      ),
-                    ),
-                  ],
+                double progress = 0;
+                if (gastoC.initialAmount > 0) {
+                  progress = (gastoC.initialAmount - gastoC.amount) / gastoC.initialAmount;
+                }
+                return LinearProgressIndicator(
+                  value: progress.clamp(0.0, 1.0),
+                  backgroundColor: Colors.white24,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    progress >= 1.0 ? Colors.red : Colors.greenAccent,
+                  ),
                 );
-              },
-            ),
-          ],
+              } catch (e) {
+                return const LinearProgressIndicator(value: 0);
+              }
+            },
+          ),
         ),
         actions: [
           IconButton(
@@ -158,17 +212,7 @@ class _GastosHistorialState extends State<GastosHistorial> {
             tooltip: AppLocalizations.of(context)!.toolTip_export,
             icon: const Icon(Icons.file_open),
             onPressed: () async {
-              if (stateFilter.isNotEmpty) {
-                await convertDataToExcel(widget.id, context);
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      AppLocalizations.of(context)!.no_data_to_export,
-                    ),
-                  ),
-                );
-              }
+              await convertDataToExcel(widget.id, context);
             },
           ),
         ],
@@ -198,24 +242,73 @@ class _GastosHistorialState extends State<GastosHistorial> {
                 stateFilter.add(data);
               }
             }
-            if (stateFilter.isEmpty) {
-              return Container(
-                alignment: Alignment.center,
-                height: 100.h,
-                child: Center(
-                  child: Text(
-                    AppLocalizations.of(context)!.no_items_history,
-                    style: const TextStyle(fontSize: 15),
+            
+            return Column(
+              children: [
+                // Header Fijo para el Título y Monto
+                Container(
+                  width: 100.w,
+                  padding: EdgeInsets.symmetric(vertical: 15.dp, horizontal: 20.dp),
+                  decoration: BoxDecoration(
+                    color: Colors.blueGrey.withOpacity(0.1),
+                    border: Border(bottom: BorderSide(color: Colors.blueGrey, width: 1.dp)),
+                  ),
+                  child: BlocBuilder<GastosCubits, List<Gasto>>(
+                    builder: (context, gState) {
+                      try {
+                        final currentGasto = gState.firstWhere((e) => e.id == widget.id);
+                        return Column(
+                          children: [
+                            Text(
+                              widget.name,
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 15.dp,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white70,
+                              ),
+                            ),
+                            if (currentGasto.type != 'normal')
+                              Padding(
+                                padding: EdgeInsets.only(top: 10.dp),
+                                child: TextButton.icon(
+                                  onPressed: () => _confirmClosePeriod(currentGasto),
+                                  icon: Icon(Icons.history_toggle_off, size: 16.dp, color: Colors.orangeAccent),
+                                  label: Text(
+                                    "Cerrar Periodo", 
+                                    style: TextStyle(color: Colors.orangeAccent, fontSize: 12.dp)
+                                  ),
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: Colors.white.withOpacity(0.05),
+                                    padding: EdgeInsets.symmetric(horizontal: 12.dp),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      } catch (e) {
+                        return const SizedBox();
+                      }
+                    },
                   ),
                 ),
-              );
-            } else {
-              return ListView.builder(
-                itemCount: stateFilter.length,
-                itemBuilder: (context, index) {
-                  final ghisto = context.read<GastosHistorialCubits>();
-                  final gasto = context.read<GastosCubits>();
-                  return Container(
+                // Lista de items expandida
+                Expanded(
+                  child: stateFilter.isEmpty
+                      ? Center(
+                          child: Text(
+                            AppLocalizations.of(context)!.no_items_history,
+                            style: const TextStyle(fontSize: 15),
+                          ),
+                        )
+                      : ListView.builder(
+                          itemCount: stateFilter.length,
+                          itemBuilder: (context, index) {
+                            final ghisto = context.read<GastosHistorialCubits>();
+                            final gasto = context.read<GastosCubits>();
+                            return Container(
                     margin: EdgeInsets.only(
                       top: 10.dp,
                       left: 5.dp,
@@ -305,13 +398,15 @@ class _GastosHistorialState extends State<GastosHistorial> {
                     ),
                   );
                 },
-              );
-            }
-          },
-        ),
-        ),
-      ),
-      bottomNavigationBar: bottomDevName(),
+              ),
+            ),
+          ],
+        );
+      },
+    ),
+  ),
+),
+bottomNavigationBar: bottomDevName(),
     );
   }
 }

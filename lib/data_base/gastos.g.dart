@@ -52,8 +52,50 @@ class $GastosTable extends Gastos with TableInfo<$GastosTable, Gasto> {
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _initialAmountMeta = const VerificationMeta(
+    'initialAmount',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, motivo, date, amount];
+  late final GeneratedColumn<double> initialAmount = GeneratedColumn<double>(
+    'initial_amount',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('normal'),
+  );
+  static const VerificationMeta _lastResetDateMeta = const VerificationMeta(
+    'lastResetDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastResetDate =
+      GeneratedColumn<DateTime>(
+        'last_reset_date',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    motivo,
+    date,
+    amount,
+    initialAmount,
+    type,
+    lastResetDate,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -93,6 +135,30 @@ class $GastosTable extends Gastos with TableInfo<$GastosTable, Gasto> {
     } else if (isInserting) {
       context.missing(_amountMeta);
     }
+    if (data.containsKey('initial_amount')) {
+      context.handle(
+        _initialAmountMeta,
+        initialAmount.isAcceptableOrUnknown(
+          data['initial_amount']!,
+          _initialAmountMeta,
+        ),
+      );
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    }
+    if (data.containsKey('last_reset_date')) {
+      context.handle(
+        _lastResetDateMeta,
+        lastResetDate.isAcceptableOrUnknown(
+          data['last_reset_date']!,
+          _lastResetDateMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -118,6 +184,18 @@ class $GastosTable extends Gastos with TableInfo<$GastosTable, Gasto> {
         DriftSqlType.double,
         data['${effectivePrefix}amount'],
       )!,
+      initialAmount: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}initial_amount'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      lastResetDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_reset_date'],
+      ),
     );
   }
 
@@ -132,11 +210,17 @@ class Gasto extends DataClass implements Insertable<Gasto> {
   final String motivo;
   final DateTime date;
   final double amount;
+  final double initialAmount;
+  final String type;
+  final DateTime? lastResetDate;
   const Gasto({
     required this.id,
     required this.motivo,
     required this.date,
     required this.amount,
+    required this.initialAmount,
+    required this.type,
+    this.lastResetDate,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -145,6 +229,11 @@ class Gasto extends DataClass implements Insertable<Gasto> {
     map['motivo'] = Variable<String>(motivo);
     map['date'] = Variable<DateTime>(date);
     map['amount'] = Variable<double>(amount);
+    map['initial_amount'] = Variable<double>(initialAmount);
+    map['type'] = Variable<String>(type);
+    if (!nullToAbsent || lastResetDate != null) {
+      map['last_reset_date'] = Variable<DateTime>(lastResetDate);
+    }
     return map;
   }
 
@@ -154,6 +243,11 @@ class Gasto extends DataClass implements Insertable<Gasto> {
       motivo: Value(motivo),
       date: Value(date),
       amount: Value(amount),
+      initialAmount: Value(initialAmount),
+      type: Value(type),
+      lastResetDate: lastResetDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastResetDate),
     );
   }
 
@@ -167,6 +261,9 @@ class Gasto extends DataClass implements Insertable<Gasto> {
       motivo: serializer.fromJson<String>(json['motivo']),
       date: serializer.fromJson<DateTime>(json['date']),
       amount: serializer.fromJson<double>(json['amount']),
+      initialAmount: serializer.fromJson<double>(json['initialAmount']),
+      type: serializer.fromJson<String>(json['type']),
+      lastResetDate: serializer.fromJson<DateTime?>(json['lastResetDate']),
     );
   }
   @override
@@ -177,22 +274,44 @@ class Gasto extends DataClass implements Insertable<Gasto> {
       'motivo': serializer.toJson<String>(motivo),
       'date': serializer.toJson<DateTime>(date),
       'amount': serializer.toJson<double>(amount),
+      'initialAmount': serializer.toJson<double>(initialAmount),
+      'type': serializer.toJson<String>(type),
+      'lastResetDate': serializer.toJson<DateTime?>(lastResetDate),
     };
   }
 
-  Gasto copyWith({int? id, String? motivo, DateTime? date, double? amount}) =>
-      Gasto(
-        id: id ?? this.id,
-        motivo: motivo ?? this.motivo,
-        date: date ?? this.date,
-        amount: amount ?? this.amount,
-      );
+  Gasto copyWith({
+    int? id,
+    String? motivo,
+    DateTime? date,
+    double? amount,
+    double? initialAmount,
+    String? type,
+    Value<DateTime?> lastResetDate = const Value.absent(),
+  }) => Gasto(
+    id: id ?? this.id,
+    motivo: motivo ?? this.motivo,
+    date: date ?? this.date,
+    amount: amount ?? this.amount,
+    initialAmount: initialAmount ?? this.initialAmount,
+    type: type ?? this.type,
+    lastResetDate: lastResetDate.present
+        ? lastResetDate.value
+        : this.lastResetDate,
+  );
   Gasto copyWithCompanion(GastosCompanion data) {
     return Gasto(
       id: data.id.present ? data.id.value : this.id,
       motivo: data.motivo.present ? data.motivo.value : this.motivo,
       date: data.date.present ? data.date.value : this.date,
       amount: data.amount.present ? data.amount.value : this.amount,
+      initialAmount: data.initialAmount.present
+          ? data.initialAmount.value
+          : this.initialAmount,
+      type: data.type.present ? data.type.value : this.type,
+      lastResetDate: data.lastResetDate.present
+          ? data.lastResetDate.value
+          : this.lastResetDate,
     );
   }
 
@@ -202,13 +321,17 @@ class Gasto extends DataClass implements Insertable<Gasto> {
           ..write('id: $id, ')
           ..write('motivo: $motivo, ')
           ..write('date: $date, ')
-          ..write('amount: $amount')
+          ..write('amount: $amount, ')
+          ..write('initialAmount: $initialAmount, ')
+          ..write('type: $type, ')
+          ..write('lastResetDate: $lastResetDate')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, motivo, date, amount);
+  int get hashCode =>
+      Object.hash(id, motivo, date, amount, initialAmount, type, lastResetDate);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -216,7 +339,10 @@ class Gasto extends DataClass implements Insertable<Gasto> {
           other.id == this.id &&
           other.motivo == this.motivo &&
           other.date == this.date &&
-          other.amount == this.amount);
+          other.amount == this.amount &&
+          other.initialAmount == this.initialAmount &&
+          other.type == this.type &&
+          other.lastResetDate == this.lastResetDate);
 }
 
 class GastosCompanion extends UpdateCompanion<Gasto> {
@@ -224,17 +350,26 @@ class GastosCompanion extends UpdateCompanion<Gasto> {
   final Value<String> motivo;
   final Value<DateTime> date;
   final Value<double> amount;
+  final Value<double> initialAmount;
+  final Value<String> type;
+  final Value<DateTime?> lastResetDate;
   const GastosCompanion({
     this.id = const Value.absent(),
     this.motivo = const Value.absent(),
     this.date = const Value.absent(),
     this.amount = const Value.absent(),
+    this.initialAmount = const Value.absent(),
+    this.type = const Value.absent(),
+    this.lastResetDate = const Value.absent(),
   });
   GastosCompanion.insert({
     this.id = const Value.absent(),
     required String motivo,
     required DateTime date,
     required double amount,
+    this.initialAmount = const Value.absent(),
+    this.type = const Value.absent(),
+    this.lastResetDate = const Value.absent(),
   }) : motivo = Value(motivo),
        date = Value(date),
        amount = Value(amount);
@@ -243,12 +378,18 @@ class GastosCompanion extends UpdateCompanion<Gasto> {
     Expression<String>? motivo,
     Expression<DateTime>? date,
     Expression<double>? amount,
+    Expression<double>? initialAmount,
+    Expression<String>? type,
+    Expression<DateTime>? lastResetDate,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (motivo != null) 'motivo': motivo,
       if (date != null) 'date': date,
       if (amount != null) 'amount': amount,
+      if (initialAmount != null) 'initial_amount': initialAmount,
+      if (type != null) 'type': type,
+      if (lastResetDate != null) 'last_reset_date': lastResetDate,
     });
   }
 
@@ -257,12 +398,18 @@ class GastosCompanion extends UpdateCompanion<Gasto> {
     Value<String>? motivo,
     Value<DateTime>? date,
     Value<double>? amount,
+    Value<double>? initialAmount,
+    Value<String>? type,
+    Value<DateTime?>? lastResetDate,
   }) {
     return GastosCompanion(
       id: id ?? this.id,
       motivo: motivo ?? this.motivo,
       date: date ?? this.date,
       amount: amount ?? this.amount,
+      initialAmount: initialAmount ?? this.initialAmount,
+      type: type ?? this.type,
+      lastResetDate: lastResetDate ?? this.lastResetDate,
     );
   }
 
@@ -281,6 +428,15 @@ class GastosCompanion extends UpdateCompanion<Gasto> {
     if (amount.present) {
       map['amount'] = Variable<double>(amount.value);
     }
+    if (initialAmount.present) {
+      map['initial_amount'] = Variable<double>(initialAmount.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (lastResetDate.present) {
+      map['last_reset_date'] = Variable<DateTime>(lastResetDate.value);
+    }
     return map;
   }
 
@@ -290,7 +446,10 @@ class GastosCompanion extends UpdateCompanion<Gasto> {
           ..write('id: $id, ')
           ..write('motivo: $motivo, ')
           ..write('date: $date, ')
-          ..write('amount: $amount')
+          ..write('amount: $amount, ')
+          ..write('initialAmount: $initialAmount, ')
+          ..write('type: $type, ')
+          ..write('lastResetDate: $lastResetDate')
           ..write(')'))
         .toString();
   }
@@ -749,6 +908,376 @@ class GastosItemsCompanion extends UpdateCompanion<GastosItem> {
   }
 }
 
+class $GastosHistorialCerradoTable extends GastosHistorialCerrado
+    with TableInfo<$GastosHistorialCerradoTable, GastosHistorialCerradoData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GastosHistorialCerradoTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _gastoIdMeta = const VerificationMeta(
+    'gastoId',
+  );
+  @override
+  late final GeneratedColumn<int> gastoId = GeneratedColumn<int>(
+    'gasto_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES gastos (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _periodLabelMeta = const VerificationMeta(
+    'periodLabel',
+  );
+  @override
+  late final GeneratedColumn<String> periodLabel = GeneratedColumn<String>(
+    'period_label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _jsonPathMeta = const VerificationMeta(
+    'jsonPath',
+  );
+  @override
+  late final GeneratedColumn<String> jsonPath = GeneratedColumn<String>(
+    'json_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _totalSpentMeta = const VerificationMeta(
+    'totalSpent',
+  );
+  @override
+  late final GeneratedColumn<double> totalSpent = GeneratedColumn<double>(
+    'total_spent',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    gastoId,
+    periodLabel,
+    jsonPath,
+    totalSpent,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'gastos_historial_cerrado';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<GastosHistorialCerradoData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('gasto_id')) {
+      context.handle(
+        _gastoIdMeta,
+        gastoId.isAcceptableOrUnknown(data['gasto_id']!, _gastoIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gastoIdMeta);
+    }
+    if (data.containsKey('period_label')) {
+      context.handle(
+        _periodLabelMeta,
+        periodLabel.isAcceptableOrUnknown(
+          data['period_label']!,
+          _periodLabelMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_periodLabelMeta);
+    }
+    if (data.containsKey('json_path')) {
+      context.handle(
+        _jsonPathMeta,
+        jsonPath.isAcceptableOrUnknown(data['json_path']!, _jsonPathMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_jsonPathMeta);
+    }
+    if (data.containsKey('total_spent')) {
+      context.handle(
+        _totalSpentMeta,
+        totalSpent.isAcceptableOrUnknown(data['total_spent']!, _totalSpentMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_totalSpentMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  GastosHistorialCerradoData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GastosHistorialCerradoData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      gastoId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}gasto_id'],
+      )!,
+      periodLabel: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}period_label'],
+      )!,
+      jsonPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}json_path'],
+      )!,
+      totalSpent: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}total_spent'],
+      )!,
+    );
+  }
+
+  @override
+  $GastosHistorialCerradoTable createAlias(String alias) {
+    return $GastosHistorialCerradoTable(attachedDatabase, alias);
+  }
+}
+
+class GastosHistorialCerradoData extends DataClass
+    implements Insertable<GastosHistorialCerradoData> {
+  final int id;
+  final int gastoId;
+  final String periodLabel;
+  final String jsonPath;
+  final double totalSpent;
+  const GastosHistorialCerradoData({
+    required this.id,
+    required this.gastoId,
+    required this.periodLabel,
+    required this.jsonPath,
+    required this.totalSpent,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['gasto_id'] = Variable<int>(gastoId);
+    map['period_label'] = Variable<String>(periodLabel);
+    map['json_path'] = Variable<String>(jsonPath);
+    map['total_spent'] = Variable<double>(totalSpent);
+    return map;
+  }
+
+  GastosHistorialCerradoCompanion toCompanion(bool nullToAbsent) {
+    return GastosHistorialCerradoCompanion(
+      id: Value(id),
+      gastoId: Value(gastoId),
+      periodLabel: Value(periodLabel),
+      jsonPath: Value(jsonPath),
+      totalSpent: Value(totalSpent),
+    );
+  }
+
+  factory GastosHistorialCerradoData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GastosHistorialCerradoData(
+      id: serializer.fromJson<int>(json['id']),
+      gastoId: serializer.fromJson<int>(json['gastoId']),
+      periodLabel: serializer.fromJson<String>(json['periodLabel']),
+      jsonPath: serializer.fromJson<String>(json['jsonPath']),
+      totalSpent: serializer.fromJson<double>(json['totalSpent']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'gastoId': serializer.toJson<int>(gastoId),
+      'periodLabel': serializer.toJson<String>(periodLabel),
+      'jsonPath': serializer.toJson<String>(jsonPath),
+      'totalSpent': serializer.toJson<double>(totalSpent),
+    };
+  }
+
+  GastosHistorialCerradoData copyWith({
+    int? id,
+    int? gastoId,
+    String? periodLabel,
+    String? jsonPath,
+    double? totalSpent,
+  }) => GastosHistorialCerradoData(
+    id: id ?? this.id,
+    gastoId: gastoId ?? this.gastoId,
+    periodLabel: periodLabel ?? this.periodLabel,
+    jsonPath: jsonPath ?? this.jsonPath,
+    totalSpent: totalSpent ?? this.totalSpent,
+  );
+  GastosHistorialCerradoData copyWithCompanion(
+    GastosHistorialCerradoCompanion data,
+  ) {
+    return GastosHistorialCerradoData(
+      id: data.id.present ? data.id.value : this.id,
+      gastoId: data.gastoId.present ? data.gastoId.value : this.gastoId,
+      periodLabel: data.periodLabel.present
+          ? data.periodLabel.value
+          : this.periodLabel,
+      jsonPath: data.jsonPath.present ? data.jsonPath.value : this.jsonPath,
+      totalSpent: data.totalSpent.present
+          ? data.totalSpent.value
+          : this.totalSpent,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GastosHistorialCerradoData(')
+          ..write('id: $id, ')
+          ..write('gastoId: $gastoId, ')
+          ..write('periodLabel: $periodLabel, ')
+          ..write('jsonPath: $jsonPath, ')
+          ..write('totalSpent: $totalSpent')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, gastoId, periodLabel, jsonPath, totalSpent);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GastosHistorialCerradoData &&
+          other.id == this.id &&
+          other.gastoId == this.gastoId &&
+          other.periodLabel == this.periodLabel &&
+          other.jsonPath == this.jsonPath &&
+          other.totalSpent == this.totalSpent);
+}
+
+class GastosHistorialCerradoCompanion
+    extends UpdateCompanion<GastosHistorialCerradoData> {
+  final Value<int> id;
+  final Value<int> gastoId;
+  final Value<String> periodLabel;
+  final Value<String> jsonPath;
+  final Value<double> totalSpent;
+  const GastosHistorialCerradoCompanion({
+    this.id = const Value.absent(),
+    this.gastoId = const Value.absent(),
+    this.periodLabel = const Value.absent(),
+    this.jsonPath = const Value.absent(),
+    this.totalSpent = const Value.absent(),
+  });
+  GastosHistorialCerradoCompanion.insert({
+    this.id = const Value.absent(),
+    required int gastoId,
+    required String periodLabel,
+    required String jsonPath,
+    required double totalSpent,
+  }) : gastoId = Value(gastoId),
+       periodLabel = Value(periodLabel),
+       jsonPath = Value(jsonPath),
+       totalSpent = Value(totalSpent);
+  static Insertable<GastosHistorialCerradoData> custom({
+    Expression<int>? id,
+    Expression<int>? gastoId,
+    Expression<String>? periodLabel,
+    Expression<String>? jsonPath,
+    Expression<double>? totalSpent,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (gastoId != null) 'gasto_id': gastoId,
+      if (periodLabel != null) 'period_label': periodLabel,
+      if (jsonPath != null) 'json_path': jsonPath,
+      if (totalSpent != null) 'total_spent': totalSpent,
+    });
+  }
+
+  GastosHistorialCerradoCompanion copyWith({
+    Value<int>? id,
+    Value<int>? gastoId,
+    Value<String>? periodLabel,
+    Value<String>? jsonPath,
+    Value<double>? totalSpent,
+  }) {
+    return GastosHistorialCerradoCompanion(
+      id: id ?? this.id,
+      gastoId: gastoId ?? this.gastoId,
+      periodLabel: periodLabel ?? this.periodLabel,
+      jsonPath: jsonPath ?? this.jsonPath,
+      totalSpent: totalSpent ?? this.totalSpent,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (gastoId.present) {
+      map['gasto_id'] = Variable<int>(gastoId.value);
+    }
+    if (periodLabel.present) {
+      map['period_label'] = Variable<String>(periodLabel.value);
+    }
+    if (jsonPath.present) {
+      map['json_path'] = Variable<String>(jsonPath.value);
+    }
+    if (totalSpent.present) {
+      map['total_spent'] = Variable<double>(totalSpent.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GastosHistorialCerradoCompanion(')
+          ..write('id: $id, ')
+          ..write('gastoId: $gastoId, ')
+          ..write('periodLabel: $periodLabel, ')
+          ..write('jsonPath: $jsonPath, ')
+          ..write('totalSpent: $totalSpent')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $CategoriasTable extends Categorias
     with TableInfo<$CategoriasTable, Categoria> {
   @override
@@ -1151,6 +1680,8 @@ abstract class _$GastosDatabase extends GeneratedDatabase {
   $GastosDatabaseManager get managers => $GastosDatabaseManager(this);
   late final $GastosTable gastos = $GastosTable(this);
   late final $GastosItemsTable gastosItems = $GastosItemsTable(this);
+  late final $GastosHistorialCerradoTable gastosHistorialCerrado =
+      $GastosHistorialCerradoTable(this);
   late final $CategoriasTable categorias = $CategoriasTable(this);
   late final $AppSettingsTable appSettings = $AppSettingsTable(this);
   @override
@@ -1160,6 +1691,7 @@ abstract class _$GastosDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     gastos,
     gastosItems,
+    gastosHistorialCerrado,
     categorias,
     appSettings,
   ];
@@ -1172,6 +1704,15 @@ abstract class _$GastosDatabase extends GeneratedDatabase {
       ),
       result: [TableUpdate('gastos_items', kind: UpdateKind.delete)],
     ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'gastos',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('gastos_historial_cerrado', kind: UpdateKind.delete),
+      ],
+    ),
   ]);
 }
 
@@ -1181,6 +1722,9 @@ typedef $$GastosTableCreateCompanionBuilder =
       required String motivo,
       required DateTime date,
       required double amount,
+      Value<double> initialAmount,
+      Value<String> type,
+      Value<DateTime?> lastResetDate,
     });
 typedef $$GastosTableUpdateCompanionBuilder =
     GastosCompanion Function({
@@ -1188,6 +1732,9 @@ typedef $$GastosTableUpdateCompanionBuilder =
       Value<String> motivo,
       Value<DateTime> date,
       Value<double> amount,
+      Value<double> initialAmount,
+      Value<String> type,
+      Value<DateTime?> lastResetDate,
     });
 
 final class $$GastosTableReferences
@@ -1207,6 +1754,34 @@ final class $$GastosTableReferences
     ).filter((f) => f.gastoId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_gastosItemsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $GastosHistorialCerradoTable,
+    List<GastosHistorialCerradoData>
+  >
+  _gastosHistorialCerradoRefsTable(_$GastosDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.gastosHistorialCerrado,
+        aliasName: $_aliasNameGenerator(
+          db.gastos.id,
+          db.gastosHistorialCerrado.gastoId,
+        ),
+      );
+
+  $$GastosHistorialCerradoTableProcessedTableManager
+  get gastosHistorialCerradoRefs {
+    final manager = $$GastosHistorialCerradoTableTableManager(
+      $_db,
+      $_db.gastosHistorialCerrado,
+    ).filter((f) => f.gastoId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _gastosHistorialCerradoRefsTable($_db),
+    );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -1242,6 +1817,21 @@ class $$GastosTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<double> get initialAmount => $composableBuilder(
+    column: $table.initialAmount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastResetDate => $composableBuilder(
+    column: $table.lastResetDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
   Expression<bool> gastosItemsRefs(
     Expression<bool> Function($$GastosItemsTableFilterComposer f) f,
   ) {
@@ -1264,6 +1854,32 @@ class $$GastosTableFilterComposer
                 $removeJoinBuilderFromRootComposer,
           ),
     );
+    return f(composer);
+  }
+
+  Expression<bool> gastosHistorialCerradoRefs(
+    Expression<bool> Function($$GastosHistorialCerradoTableFilterComposer f) f,
+  ) {
+    final $$GastosHistorialCerradoTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.gastosHistorialCerrado,
+          getReferencedColumn: (t) => t.gastoId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GastosHistorialCerradoTableFilterComposer(
+                $db: $db,
+                $table: $db.gastosHistorialCerrado,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 }
@@ -1296,6 +1912,21 @@ class $$GastosTableOrderingComposer
     column: $table.amount,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<double> get initialAmount => $composableBuilder(
+    column: $table.initialAmount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastResetDate => $composableBuilder(
+    column: $table.lastResetDate,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$GastosTableAnnotationComposer
@@ -1318,6 +1949,19 @@ class $$GastosTableAnnotationComposer
 
   GeneratedColumn<double> get amount =>
       $composableBuilder(column: $table.amount, builder: (column) => column);
+
+  GeneratedColumn<double> get initialAmount => $composableBuilder(
+    column: $table.initialAmount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastResetDate => $composableBuilder(
+    column: $table.lastResetDate,
+    builder: (column) => column,
+  );
 
   Expression<T> gastosItemsRefs<T extends Object>(
     Expression<T> Function($$GastosItemsTableAnnotationComposer a) f,
@@ -1343,6 +1987,32 @@ class $$GastosTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> gastosHistorialCerradoRefs<T extends Object>(
+    Expression<T> Function($$GastosHistorialCerradoTableAnnotationComposer a) f,
+  ) {
+    final $$GastosHistorialCerradoTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.gastosHistorialCerrado,
+          getReferencedColumn: (t) => t.gastoId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GastosHistorialCerradoTableAnnotationComposer(
+                $db: $db,
+                $table: $db.gastosHistorialCerrado,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$GastosTableTableManager
@@ -1358,7 +2028,10 @@ class $$GastosTableTableManager
           $$GastosTableUpdateCompanionBuilder,
           (Gasto, $$GastosTableReferences),
           Gasto,
-          PrefetchHooks Function({bool gastosItemsRefs})
+          PrefetchHooks Function({
+            bool gastosItemsRefs,
+            bool gastosHistorialCerradoRefs,
+          })
         > {
   $$GastosTableTableManager(_$GastosDatabase db, $GastosTable table)
     : super(
@@ -1377,11 +2050,17 @@ class $$GastosTableTableManager
                 Value<String> motivo = const Value.absent(),
                 Value<DateTime> date = const Value.absent(),
                 Value<double> amount = const Value.absent(),
+                Value<double> initialAmount = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<DateTime?> lastResetDate = const Value.absent(),
               }) => GastosCompanion(
                 id: id,
                 motivo: motivo,
                 date: date,
                 amount: amount,
+                initialAmount: initialAmount,
+                type: type,
+                lastResetDate: lastResetDate,
               ),
           createCompanionCallback:
               ({
@@ -1389,11 +2068,17 @@ class $$GastosTableTableManager
                 required String motivo,
                 required DateTime date,
                 required double amount,
+                Value<double> initialAmount = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<DateTime?> lastResetDate = const Value.absent(),
               }) => GastosCompanion.insert(
                 id: id,
                 motivo: motivo,
                 date: date,
                 amount: amount,
+                initialAmount: initialAmount,
+                type: type,
+                lastResetDate: lastResetDate,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -1401,31 +2086,63 @@ class $$GastosTableTableManager
                     (e.readTable(table), $$GastosTableReferences(db, table, e)),
               )
               .toList(),
-          prefetchHooksCallback: ({gastosItemsRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (gastosItemsRefs) db.gastosItems],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (gastosItemsRefs)
-                    await $_getPrefetchedData<Gasto, $GastosTable, GastosItem>(
-                      currentTable: table,
-                      referencedTable: $$GastosTableReferences
-                          ._gastosItemsRefsTable(db),
-                      managerFromTypedResult: (p0) => $$GastosTableReferences(
-                        db,
-                        table,
-                        p0,
-                      ).gastosItemsRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.gastoId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({gastosItemsRefs = false, gastosHistorialCerradoRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (gastosItemsRefs) db.gastosItems,
+                    if (gastosHistorialCerradoRefs) db.gastosHistorialCerrado,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (gastosItemsRefs)
+                        await $_getPrefetchedData<
+                          Gasto,
+                          $GastosTable,
+                          GastosItem
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GastosTableReferences
+                              ._gastosItemsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GastosTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).gastosItemsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gastoId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (gastosHistorialCerradoRefs)
+                        await $_getPrefetchedData<
+                          Gasto,
+                          $GastosTable,
+                          GastosHistorialCerradoData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GastosTableReferences
+                              ._gastosHistorialCerradoRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GastosTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).gastosHistorialCerradoRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gastoId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -1442,7 +2159,10 @@ typedef $$GastosTableProcessedTableManager =
       $$GastosTableUpdateCompanionBuilder,
       (Gasto, $$GastosTableReferences),
       Gasto,
-      PrefetchHooks Function({bool gastosItemsRefs})
+      PrefetchHooks Function({
+        bool gastosItemsRefs,
+        bool gastosHistorialCerradoRefs,
+      })
     >;
 typedef $$GastosItemsTableCreateCompanionBuilder =
     GastosItemsCompanion Function({
@@ -1795,6 +2515,345 @@ typedef $$GastosItemsTableProcessedTableManager =
       GastosItem,
       PrefetchHooks Function({bool gastoId})
     >;
+typedef $$GastosHistorialCerradoTableCreateCompanionBuilder =
+    GastosHistorialCerradoCompanion Function({
+      Value<int> id,
+      required int gastoId,
+      required String periodLabel,
+      required String jsonPath,
+      required double totalSpent,
+    });
+typedef $$GastosHistorialCerradoTableUpdateCompanionBuilder =
+    GastosHistorialCerradoCompanion Function({
+      Value<int> id,
+      Value<int> gastoId,
+      Value<String> periodLabel,
+      Value<String> jsonPath,
+      Value<double> totalSpent,
+    });
+
+final class $$GastosHistorialCerradoTableReferences
+    extends
+        BaseReferences<
+          _$GastosDatabase,
+          $GastosHistorialCerradoTable,
+          GastosHistorialCerradoData
+        > {
+  $$GastosHistorialCerradoTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $GastosTable _gastoIdTable(_$GastosDatabase db) =>
+      db.gastos.createAlias(
+        $_aliasNameGenerator(db.gastosHistorialCerrado.gastoId, db.gastos.id),
+      );
+
+  $$GastosTableProcessedTableManager get gastoId {
+    final $_column = $_itemColumn<int>('gasto_id')!;
+
+    final manager = $$GastosTableTableManager(
+      $_db,
+      $_db.gastos,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_gastoIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$GastosHistorialCerradoTableFilterComposer
+    extends Composer<_$GastosDatabase, $GastosHistorialCerradoTable> {
+  $$GastosHistorialCerradoTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get periodLabel => $composableBuilder(
+    column: $table.periodLabel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get jsonPath => $composableBuilder(
+    column: $table.jsonPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get totalSpent => $composableBuilder(
+    column: $table.totalSpent,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$GastosTableFilterComposer get gastoId {
+    final $$GastosTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gastoId,
+      referencedTable: $db.gastos,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GastosTableFilterComposer(
+            $db: $db,
+            $table: $db.gastos,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GastosHistorialCerradoTableOrderingComposer
+    extends Composer<_$GastosDatabase, $GastosHistorialCerradoTable> {
+  $$GastosHistorialCerradoTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get periodLabel => $composableBuilder(
+    column: $table.periodLabel,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get jsonPath => $composableBuilder(
+    column: $table.jsonPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get totalSpent => $composableBuilder(
+    column: $table.totalSpent,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$GastosTableOrderingComposer get gastoId {
+    final $$GastosTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gastoId,
+      referencedTable: $db.gastos,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GastosTableOrderingComposer(
+            $db: $db,
+            $table: $db.gastos,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GastosHistorialCerradoTableAnnotationComposer
+    extends Composer<_$GastosDatabase, $GastosHistorialCerradoTable> {
+  $$GastosHistorialCerradoTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get periodLabel => $composableBuilder(
+    column: $table.periodLabel,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get jsonPath =>
+      $composableBuilder(column: $table.jsonPath, builder: (column) => column);
+
+  GeneratedColumn<double> get totalSpent => $composableBuilder(
+    column: $table.totalSpent,
+    builder: (column) => column,
+  );
+
+  $$GastosTableAnnotationComposer get gastoId {
+    final $$GastosTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gastoId,
+      referencedTable: $db.gastos,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GastosTableAnnotationComposer(
+            $db: $db,
+            $table: $db.gastos,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GastosHistorialCerradoTableTableManager
+    extends
+        RootTableManager<
+          _$GastosDatabase,
+          $GastosHistorialCerradoTable,
+          GastosHistorialCerradoData,
+          $$GastosHistorialCerradoTableFilterComposer,
+          $$GastosHistorialCerradoTableOrderingComposer,
+          $$GastosHistorialCerradoTableAnnotationComposer,
+          $$GastosHistorialCerradoTableCreateCompanionBuilder,
+          $$GastosHistorialCerradoTableUpdateCompanionBuilder,
+          (GastosHistorialCerradoData, $$GastosHistorialCerradoTableReferences),
+          GastosHistorialCerradoData,
+          PrefetchHooks Function({bool gastoId})
+        > {
+  $$GastosHistorialCerradoTableTableManager(
+    _$GastosDatabase db,
+    $GastosHistorialCerradoTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GastosHistorialCerradoTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$GastosHistorialCerradoTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$GastosHistorialCerradoTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> gastoId = const Value.absent(),
+                Value<String> periodLabel = const Value.absent(),
+                Value<String> jsonPath = const Value.absent(),
+                Value<double> totalSpent = const Value.absent(),
+              }) => GastosHistorialCerradoCompanion(
+                id: id,
+                gastoId: gastoId,
+                periodLabel: periodLabel,
+                jsonPath: jsonPath,
+                totalSpent: totalSpent,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int gastoId,
+                required String periodLabel,
+                required String jsonPath,
+                required double totalSpent,
+              }) => GastosHistorialCerradoCompanion.insert(
+                id: id,
+                gastoId: gastoId,
+                periodLabel: periodLabel,
+                jsonPath: jsonPath,
+                totalSpent: totalSpent,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$GastosHistorialCerradoTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({gastoId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (gastoId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.gastoId,
+                                referencedTable:
+                                    $$GastosHistorialCerradoTableReferences
+                                        ._gastoIdTable(db),
+                                referencedColumn:
+                                    $$GastosHistorialCerradoTableReferences
+                                        ._gastoIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$GastosHistorialCerradoTableProcessedTableManager =
+    ProcessedTableManager<
+      _$GastosDatabase,
+      $GastosHistorialCerradoTable,
+      GastosHistorialCerradoData,
+      $$GastosHistorialCerradoTableFilterComposer,
+      $$GastosHistorialCerradoTableOrderingComposer,
+      $$GastosHistorialCerradoTableAnnotationComposer,
+      $$GastosHistorialCerradoTableCreateCompanionBuilder,
+      $$GastosHistorialCerradoTableUpdateCompanionBuilder,
+      (GastosHistorialCerradoData, $$GastosHistorialCerradoTableReferences),
+      GastosHistorialCerradoData,
+      PrefetchHooks Function({bool gastoId})
+    >;
 typedef $$CategoriasTableCreateCompanionBuilder =
     CategoriasCompanion Function({Value<int> id, required String name});
 typedef $$CategoriasTableUpdateCompanionBuilder =
@@ -2056,6 +3115,11 @@ class $GastosDatabaseManager {
       $$GastosTableTableManager(_db, _db.gastos);
   $$GastosItemsTableTableManager get gastosItems =>
       $$GastosItemsTableTableManager(_db, _db.gastosItems);
+  $$GastosHistorialCerradoTableTableManager get gastosHistorialCerrado =>
+      $$GastosHistorialCerradoTableTableManager(
+        _db,
+        _db.gastosHistorialCerrado,
+      );
   $$CategoriasTableTableManager get categorias =>
       $$CategoriasTableTableManager(_db, _db.categorias);
   $$AppSettingsTableTableManager get appSettings =>

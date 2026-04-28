@@ -42,6 +42,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get etiqueta_monto => 'Valor a gerenciar';
 
   @override
+  String get excel_header_monto_gastado => 'Valor gasto';
+
+  @override
   String get etiqueta_fecha => 'Data';
 
   @override
@@ -138,11 +141,11 @@ class AppLocalizationsPt extends AppLocalizations {
       'Para começar, pressione o botão + no canto superior para criar seu primeiro orçamento ou conta.';
 
   @override
-  String get alert_no_items_history_title => 'Adicione seu primer gasto!';
+  String get alert_no_items_history_title => 'Adicione seu primeiro gasto!';
 
   @override
   String get alert_no_items_history_content =>
-      'Pressione o botón + para registrar seu primeiro movimento neste orçamento.';
+      'Pressione o botão + para registrar seu primeiro movimento neste orçamento.';
 
   @override
   String get alert_btn_ok => 'Entendi';

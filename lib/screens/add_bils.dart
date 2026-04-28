@@ -19,6 +19,8 @@ TextEditingController dateController = TextEditingController();
 TextEditingController idController = TextEditingController();
 TextEditingController idUpdateController = TextEditingController();
 
+String selectedType = 'normal';
+
 class NewControl extends StatelessWidget {
   const NewControl({super.key});
 
@@ -75,6 +77,34 @@ class NewControl extends StatelessWidget {
                     border: OutlineInputBorder(),
                   ),
                 ),
+                SizedBox(height: 5.h),
+                StatefulBuilder(
+                  builder: (context, setStateSB) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Tipo de Presupuesto:",
+                          style: TextStyle(fontSize: 14.dp, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 1.h),
+                        SegmentedButton<String>(
+                          segments: const [
+                            ButtonSegment(value: 'normal', label: Text('Normal')),
+                            ButtonSegment(value: 'monthly', label: Text('Mensual')),
+                            ButtonSegment(value: 'annual', label: Text('Anual')),
+                          ],
+                          selected: {selectedType},
+                          onSelectionChanged: (newSelection) {
+                            setStateSB(() {
+                              selectedType = newSelection.first;
+                            });
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                ),
                 SizedBox(height: 8.h),
                 Center(
                   child: Row(
@@ -125,10 +155,12 @@ class NewControl extends StatelessWidget {
                             motivoController.text,
                             format.parse(dateController.text),
                             double.parse(amountController.text),
+                            type: selectedType,
                           ).whenComplete(() async {
                             dateController.clear();
                             motivoController.clear();
                             amountController.clear();
+                            selectedType = 'normal'; // Reset
                             if (context.mounted) {
                               context.read<GastosCubits>().getGastos();
                               Navigator.pop(context);
